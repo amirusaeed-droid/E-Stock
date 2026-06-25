@@ -1,1 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-Stock Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f4f7fb;color:#1f2937}
+.app{display:flex;min-height:100vh}
+.sidebar{width:250px;background:#003366;color:white;padding:20px}
+.logo{text-align:center;margin-bottom:30px}
+.logo img{width:70px}
+.logo h2{margin-top:10px}
+.menu a{display:block;color:white;text-decoration:none;padding:13px;border-radius:10px;margin-bottom:8px}
+.menu a:hover,.active{background:#005bbb}
+.main{flex:1;padding:25px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+.card{background:white;padding:25px;border-radius:18px;box-shadow:0 8px 20px rgba(0,0,0,.08)}
+.card h3{font-size:15px;color:#666}
+.card p{font-size:32px;font-weight:bold;margin-top:10px;color:#003366}
+.section{background:white;margin-top:25px;padding:25px;border-radius:18px}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{padding:12px;border-bottom:1px solid #eee;text-align:left}
+th{background:#eef5ff}
+.badge{padding:5px 10px;border-radius:20px;font-size:12px}
+.low{background:#ffe5e5;color:#b00020}
+.ok{background:#e5fff1;color:#007a3d}
+</style>
+</head>
+<body>
 
+<div class="app">
+
+<aside class="sidebar">
+  <div class="logo">
+    <img src="assets/logo.png" alt="Logo">
+    <h2>E-Stock</h2>
+    <small>Kondey Council</small>
+  </div>
+
+  <nav class="menu">
+    <a class="active" href="dashboard.html">Dashboard</a>
+    <a href="pages/items.html">Items</a>
+    <a href="pages/stock-in.html">Stock In</a>
+    <a href="pages/stock-out.html">Stock Out</a>
+    <a href="pages/requests.html">Requests</a>
+    <a href="pages/reports.html">Reports</a>
+    <a href="pages/users.html">Users</a>
+    <a href="login.html">Logout</a>
+  </nav>
+</aside>
+
+<main class="main">
+
+  <div class="topbar">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Advanced Inventory & Stock Management System</p>
+    </div>
+    <strong>Admin</strong>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Total Items</h3>
+      <p>128</p>
+    </div>
+    <div class="card">
+      <h3>Stock In This Month</h3>
+      <p>46</p>
+    </div>
+    <div class="card">
+      <h3>Stock Out This Month</h3>
+      <p>31</p>
+    </div>
+    <div class="card">
+      <h3>Pending Requests</h3>
+      <p>7</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Low Stock Alerts</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Item Code</th>
+          <th>Item Name</th>
+          <th>Current Stock</th>
+          <th>Minimum Stock</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ITM-001</td>
+          <td>A4 Paper</td>
+          <td>4</td>
+          <td>10</td>
+          <td><span class="badge low">Low Stock</span></td>
+        </tr>
+        <tr>
+          <td>ITM-002</td>
+          <td>Printer Toner</td>
+          <td>2</td>
+          <td>5</td>
+          <td><span class="badge low">Low Stock</span></td>
+        </tr>
+        <tr>
+          <td>ITM-003</td>
+          <td>Blue Pen</td>
+          <td>60</td>
+          <td>20</td>
+          <td><span class="badge ok">Available</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+</div>
+
+</body>
+</html>
