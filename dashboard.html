@@ -6,6 +6,7 @@
   <title>E-Stock Dashboard</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
+
 <body>
   <div class="app-shell">
     <aside class="sidebar">
@@ -18,12 +19,13 @@
       <nav class="menu">
         <a href="dashboard.html" class="active">📊 Dashboard</a>
         <a href="pages/items.html">📦 Items</a>
+        <a href="pages/categories.html">📂 Categories</a>
+        <a href="pages/suppliers.html">🏢 Suppliers</a>
         <a href="pages/stock-in.html">📥 Stock In</a>
         <a href="pages/stock-out.html">📤 Stock Out</a>
         <a href="pages/requests.html">📝 Requests</a>
         <a href="pages/reports.html">📄 Reports</a>
         <a href="pages/users.html">👥 Users</a>
-        <a href="pages/settings.html">⚙ Settings</a>
         <a href="login.html">🚪 Logout</a>
       </nav>
     </aside>
@@ -34,6 +36,7 @@
           <h1>Dashboard</h1>
           <p>Welcome to E-Stock Enterprise System</p>
         </div>
+
         <div class="top-actions">
           <input class="search-box" placeholder="Search items, requests..." />
           <button class="btn" onclick="toggleDarkMode()">🌙 Dark</button>
@@ -48,37 +51,91 @@
       </section>
 
       <section class="stats-grid">
-        <div class="stat-card"><div class="icon">📦</div><h3>Total Items</h3><strong>128</strong></div>
-        <div class="stat-card"><div class="icon">📥</div><h3>Stock In This Month</h3><strong>46</strong></div>
-        <div class="stat-card"><div class="icon">📤</div><h3>Stock Out This Month</h3><strong>31</strong></div>
-        <div class="stat-card"><div class="icon">📝</div><h3>Pending Requests</h3><strong>7</strong></div>
+        <div class="stat-card">
+          <div class="icon">📦</div>
+          <h3>Total Items</h3>
+          <strong id="dashTotalItems">0</strong>
+        </div>
+
+        <div class="stat-card">
+          <div class="icon">⚠️</div>
+          <h3>Low Stock Items</h3>
+          <strong id="dashLowStock">0</strong>
+        </div>
+
+        <div class="stat-card">
+          <div class="icon">🏢</div>
+          <h3>Total Suppliers</h3>
+          <strong id="dashSuppliers">0</strong>
+        </div>
+
+        <div class="stat-card">
+          <div class="icon">📂</div>
+          <h3>Categories</h3>
+          <strong id="dashCategories">0</strong>
+        </div>
       </section>
 
       <section class="content-grid">
         <div class="panel">
           <h2>Low Stock Alerts</h2>
+
           <table>
             <thead>
-              <tr><th>Code</th><th>Item</th><th>Balance</th><th>Status</th></tr>
+              <tr>
+                <th>Code</th>
+                <th>Item</th>
+                <th>Balance</th>
+                <th>Status</th>
+              </tr>
             </thead>
-            <tbody>
-              <tr><td>ITM-001</td><td>A4 Paper</td><td>4</td><td><span class="badge badge-danger">Low</span></td></tr>
-              <tr><td>ITM-002</td><td>Printer Toner</td><td>2</td><td><span class="badge badge-danger">Low</span></td></tr>
-              <tr><td>ITM-003</td><td>Blue Pen</td><td>60</td><td><span class="badge badge-success">Available</span></td></tr>
-            </tbody>
+
+            <tbody id="dashLowStockTable"></tbody>
           </table>
         </div>
 
         <div class="panel">
           <h2>Recent Activity</h2>
-          <div class="activity-item"><strong>Stock received</strong><span>10 boxes of A4 paper added today</span></div>
-          <div class="activity-item"><strong>Stock issued</strong><span>Printer toner issued to Admin Section</span></div>
-          <div class="activity-item"><strong>Request pending</strong><span>Cleaning items request awaiting approval</span></div>
-          <div class="activity-item"><strong>Low stock alert</strong><span>Printer toner below minimum level</span></div>
+          <div id="dashRecentActivity"></div>
         </div>
       </section>
+
+      <footer style="margin-top:30px;padding:20px;text-align:center;border-top:1px solid #ddd;">
+        <div style="margin-bottom:15px;">
+          <button class="btn" onclick="window.location.href='tutorial.html'">
+            📖 Tutorial
+          </button>
+
+          <button class="btn" style="margin-left:10px;" onclick="window.open('https://wa.me/9609662499')">
+            🆘 Call for Help
+          </button>
+        </div>
+
+        <div style="font-weight:bold;font-size:16px;">
+          Developed by Amir Saeed
+        </div>
+
+        <div style="font-size:13px;color:#666;">
+          Secretary General | Secretariat of Kondey Council
+        </div>
+
+        <div style="margin-top:10px;">
+          <a href="https://www.facebook.com/amir.saeedh/" target="_blank" style="text-decoration:none;font-size:24px;margin:0 8px;">📘</a>
+          <a href="https://x.com/amirusaeed" target="_blank" style="text-decoration:none;font-size:24px;margin:0 8px;">𝕏</a>
+          <a href="https://www.linkedin.com/feed/" target="_blank" style="text-decoration:none;font-size:24px;margin:0 8px;">🔗</a>
+        </div>
+
+        <div style="margin-top:8px;font-size:14px;color:#666;">
+          Mobile: +960 9662499
+        </div>
+
+        <div style="margin-top:10px;color:#666;font-size:13px;">
+          E-Stock Inventory Management System © 2026
+        </div>
+      </footer>
     </main>
   </div>
+
   <script src="js/app.js"></script>
 </body>
 </html>

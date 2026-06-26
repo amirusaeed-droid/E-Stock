@@ -492,4 +492,72 @@ function addStockOutToTable(record) {
     <td>${record.purpose || "-"}</td>
     <td>${record.remarks || "-"}</td>
   `;
+}function loadDashboardStats() {
+  const items = JSON.parse(localStorage.getItem("estock_items")) || [];
+  const categories = JSON.parse(localStorage.getItem("estock_categories")) || [];
+  const suppliers = JSON.parse(localStorage.getItem("estock_suppliers")) || [];
+  const stockIn = JSON.parse(localStorage.getItem("estock_stock_in")) || [];
+  const stockOut = JSON.parse(localStorage.getItem("estock_stock_out")) || [];
+
+  const lowItems = items.filter(item => Number(item.stock) <= Number(item.minStock || 5));
+
+  if (document.getElementById("dashTotalItems")) {
+    document.getElementById("dashTotalItems").innerText = items.length;
+    document.getElementById("dashLowStock").innerText = lowItems.length;
+    document.getElementById("dashSuppliers").innerText = suppliers.length;
+    document.getElementById("dashCategories").innerText = categories.length;
+  }
+
+  const lowTable = document.getElementById("dashLowStockTable");
+  if (lowTable) {
+    lowTable.innerHTML = "";
+    lowItems.forEach(item => {
+      lowTable.innerHTML += `
+        <tr>
+          <td>${item.code}</td>
+          <td>${item.name}</td>
+          <td>${item.stock}</td>
+          <td><span class="badge badge-danger">Low</span></td>
+        </tr>
+      `;
+    });
+
+    if (lowItems.length === 0) {
+      lowTable.innerHTML = `<tr><td colspan="4">No low stock items</td></tr>`;
+    }
+  }
+
+  const activityBox = document.getElementById("dashRecentActivity");
+  if (activityBox) {
+    activityBox.innerHTML = "";
+
+    const recent = [];
+
+    stockIn.slice(-3).forEach(r => {
+      recent.push({
+        title: "Stock received",
+        text: `${r.qty} ${r.itemName} received from ${r.supplier}`
+      });
+    });
+
+    stockOut.slice(-3).forEach(r => {
+      recent.push({
+        title: "Stock issued",
+        text: `${r.qty} ${r.itemName} issued to ${r.department}`
+      });
+    });
+
+    recent.slice(-5).reverse().forEach(a => {
+      activityBox.innerHTML += `
+        <div class="activity-item">
+          <strong>${a.title}</strong>
+          <span>${a.text}</span>
+        </div>
+      `;
+    });
+
+    if (recent.length === 0) {
+      activityBox.innerHTML = `<div class="activity-item"><strong>No recent activity</strong><span>Stock movements will appear here.</span></div>`;
+    }
+  }
 }
