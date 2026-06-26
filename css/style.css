@@ -1,0 +1,59 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+:root {
+  --primary: #0057b8; --primary-dark: #003b7a; --secondary: #00a6a6;
+  --bg: #f4f7fb; --card: #ffffff; --text: #1f2937; --muted: #6b7280;
+  --border: #e5e7eb; --danger: #dc2626; --success: #16a34a; --warning: #f59e0b;
+}
+body { background: var(--bg); color: var(--text); }
+.login-page {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(rgba(0,43,92,.62), rgba(0,43,92,.62)), url("../assets/backgrounds/kondey-island.jpg");
+  background-size: cover; background-position: center;
+}
+.login-card {
+  width: 390px; background: rgba(255,255,255,.95); padding: 35px; border-radius: 24px;
+  box-shadow: 0 25px 60px rgba(0,0,0,.28); backdrop-filter: blur(8px);
+}
+.login-logo { width: 95px; height: 95px; object-fit: contain; display: block; margin: 0 auto 15px; }
+.login-card h1 { text-align: center; color: var(--primary-dark); font-size: 34px; }
+.login-card p { text-align: center; color: var(--muted); margin: 8px 0 24px; }
+.login-card label { display:block; margin: 12px 0 6px; font-weight: 700; color: var(--primary-dark); }
+.login-card input, .search-box { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; outline: none; }
+.login-card small { display:block; margin-top: 18px; text-align:center; color: var(--muted); }
+.btn { border: none; padding: 11px 15px; border-radius: 12px; cursor: pointer; background: var(--primary); color: white; font-weight: 700; }
+.btn:hover { background: var(--primary-dark); }
+.btn.full { width: 100%; margin-top: 18px; }
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 270px; background: linear-gradient(180deg, #002b5c, #004c99); color: white; padding: 22px;
+  position: fixed; top: 0; bottom: 0; left: 0; overflow-y: auto;
+}
+.brand { text-align: center; margin-bottom: 28px; }
+.brand img { width: 82px; height: 82px; object-fit: contain; background: white; padding: 8px; border-radius: 18px; }
+.brand h2 { margin-top: 10px; font-size: 24px; } .brand p { font-size: 13px; opacity: .85; }
+.menu a { display: flex; align-items: center; gap: 12px; padding: 13px 14px; color: white; text-decoration: none; border-radius: 12px; margin-bottom: 8px; font-weight: 500; }
+.menu a:hover, .menu a.active { background: rgba(255,255,255,.18); }
+.main-content { margin-left: 270px; width: calc(100% - 270px); padding: 24px; }
+.topbar { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 8px 20px rgba(0,0,0,.04); }
+.topbar h1 { font-size: 24px; color: var(--primary-dark); } .topbar p { font-size: 14px; color: var(--muted); }
+.top-actions { display:flex; align-items:center; gap:10px; } .search-box { width:230px; }
+.hero { margin-top: 22px; min-height: 190px; border-radius: 24px; padding: 32px; color: white; background: linear-gradient(rgba(0,43,92,.60), rgba(0,43,92,.60)), url("../assets/backgrounds/kondey-island.jpg"); background-size: cover; background-position: center; display: flex; align-items: end; box-shadow: 0 14px 35px rgba(0,43,92,.25); }
+.hero h2 { font-size: 32px; } .hero p { margin-top: 8px; opacity: .92; }
+.stats-grid { margin-top: 22px; display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 22px; box-shadow: 0 10px 25px rgba(0,0,0,.05); }
+.stat-card .icon { font-size: 28px; } .stat-card h3 { margin-top:12px; color:var(--muted); font-size:14px; }
+.stat-card strong { display:block; margin-top:8px; font-size:32px; color:var(--primary-dark); }
+.content-grid { margin-top: 22px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; }
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 22px; box-shadow: 0 10px 25px rgba(0,0,0,.05); }
+.panel h2 { font-size:20px; color:var(--primary-dark); margin-bottom:15px; }
+table { width:100%; border-collapse: collapse; } th,td { padding:13px; border-bottom:1px solid var(--border); text-align:left; font-size:14px; } th { background:#eef5ff; color:var(--primary-dark); }
+.badge { padding:6px 10px; border-radius:50px; font-size:12px; font-weight:700; } .badge-danger { background:#fee2e2; color:var(--danger); } .badge-success { background:#dcfce7; color:var(--success); }
+.activity-item { padding:13px 0; border-bottom:1px solid var(--border); } .activity-item strong { display:block; } .activity-item span { color:var(--muted); font-size:13px; }
+body.dark-mode { --bg:#0f172a; --card:#111827; --text:#f9fafb; --muted:#cbd5e1; --border:#334155; }
+body.dark-mode .topbar h1, body.dark-mode .panel h2, body.dark-mode .stat-card strong { color:#fff; } body.dark-mode th { background:#1e293b; color:white; }
+@media (max-width:900px){ .sidebar{position:relative;width:100%;} .app-shell{flex-direction:column;} .main-content{margin-left:0;width:100%;} .stats-grid,.content-grid{grid-template-columns:1fr;} .topbar{flex-direction:column;align-items:flex-start;gap:15px;} .search-box{width:100%;} }
