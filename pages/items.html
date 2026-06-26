@@ -1,2 +1,118 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>E-Stock - Items</title><link rel="stylesheet" href="../css/style.css"></head><body><div style="padding:30px"><h1>Items</h1><p>This module will be built next.</p><a href="../dashboard.html">Back to Dashboard</a></div></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Stock | Items</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="../assets/logo/logo.png">
+      <h2>E-Stock</h2>
+      <p>Kondey Council</p>
+    </div>
+
+<nav class="menu">
+  <a href="../dashboard.html">📊 Dashboard</a>
+  <a class="active" href="items.html">📦 Items</a>
+  <a href="categories.html">📂 Categories</a>
+  <a href="suppliers.html">🏢 Suppliers</a>
+  <a href="stock-in.html">📥 Stock In</a>
+  <a href="stock-out.html">📤 Stock Out</a>
+  <a href="requests.html">📝 Requests</a>
+  <a href="reports.html">📄 Reports</a>
+  <a href="users.html">👥 Users</a>
+  <a href="../login.html">🚪 Logout</a>
+</nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div>
+        <h1>Items Management</h1>
+        <p>Add, search and manage stock items</p>
+      </div>
+      <button class="btn" onclick="addItem()">+ Add Item</button>
+    </header>
+
+    <section class="panel" style="margin-top:22px;">
+      <input class="search-box" style="width:100%;" id="searchItem" placeholder="Search item..." onkeyup="searchItems()">
+
+      <table id="itemsTable">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Item</th>
+            <th>Category</th>
+            <th>Unit</th>
+            <th>Supplier</th>
+            <th>Min</th>
+            <th>Balance</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<div id="itemModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:9999; overflow:auto;">
+  <div style="background:white; width:700px; max-width:95%; margin:40px auto; padding:25px; border-radius:18px;">
+
+    <h2>Add / Edit Item</h2>
+    <br>
+
+    <input id="itemCode" placeholder="Item Code" style="width:100%;padding:12px;margin-bottom:10px;">
+    <input id="itemName" placeholder="Item Name" style="width:100%;padding:12px;margin-bottom:10px;">
+
+    <select id="itemCategory" style="width:100%;padding:12px;margin-bottom:10px;">
+      <option>Stationery</option>
+      <option>ICT</option>
+      <option>Furniture</option>
+      <option>Cleaning</option>
+      <option>Electrical</option>
+      <option>Maintenance</option>
+    </select>
+
+    <select id="itemUnit" style="width:100%;padding:12px;margin-bottom:10px;">
+      <option>Piece</option>
+      <option>Box</option>
+      <option>Packet</option>
+      <option>Ream</option>
+      <option>Roll</option>
+      <option>Bottle</option>
+      <option>Set</option>
+    </select>
+
+    <select id="itemSupplier" style="width:100%;padding:12px;margin-bottom:10px;">
+      <option>STO</option>
+      <option>Novelty</option>
+      <option>M7</option>
+      <option>Ooredoo</option>
+      <option>Dhiraagu</option>
+      <option>Other</option>
+    </select>
+
+    <input id="itemMinStock" type="number" placeholder="Minimum Stock" style="width:100%;padding:12px;margin-bottom:10px;">
+    <input id="itemStock" type="number" placeholder="Current Stock" style="width:100%;padding:12px;margin-bottom:10px;">
+    <input id="itemLocation" placeholder="Location / Rack / Store Room" style="width:100%;padding:12px;margin-bottom:10px;">
+
+    <textarea id="itemDescription" placeholder="Description / Remarks" style="width:100%;padding:12px;margin-bottom:10px;height:80px;"></textarea>
+
+    <button class="btn" onclick="saveItem()">Save Item</button>
+    <button class="btn" style="background:#999;margin-left:10px;" onclick="closeModal()">Close</button>
+
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+</body>
+</html>

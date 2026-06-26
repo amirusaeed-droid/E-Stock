@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Stock | Categories</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="../assets/logo/logo.png">
+      <h2>E-Stock</h2>
+      <p>Kondey Council</p>
+    </div>
+
+<nav class="menu">
+  <a href="../dashboard.html">📊 Dashboard</a>
+  <a class="active" href="items.html">📦 Items</a>
+  <a href="categories.html">📂 Categories</a>
+  <a href="suppliers.html">🏢 Suppliers</a>
+  <a href="stock-in.html">📥 Stock In</a>
+  <a href="stock-out.html">📤 Stock Out</a>
+  <a href="requests.html">📝 Requests</a>
+  <a href="reports.html">📄 Reports</a>
+  <a href="users.html">👥 Users</a>
+  <a href="../login.html">🚪 Logout</a>
+</nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div>
+        <h1>Categories</h1>
+        <p>Manage item categories</p>
+      </div>
+      <button class="btn" onclick="addCategory()">+ Add Category</button>
+    </header>
+
+    <section class="panel" style="margin-top:22px;">
+      <input class="search-box" style="width:100%;" id="searchCategory" placeholder="Search category..." onkeyup="searchCategories()">
+
+      <table id="categoriesTable">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Category Name</th>
+            <th>Description</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<div id="categoryModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:9999;">
+  <div style="background:white; width:500px; max-width:95%; margin:60px auto; padding:25px; border-radius:18px;">
+    <h2>Add / Edit Category</h2>
+    <br>
+    <input id="categoryName" placeholder="Category Name" style="width:100%;padding:12px;margin-bottom:10px;">
+    <textarea id="categoryDescription" placeholder="Description" style="width:100%;padding:12px;margin-bottom:10px;height:80px;"></textarea>
+
+    <button class="btn" onclick="saveCategory()">Save Category</button>
+    <button class="btn" style="background:#999;margin-left:10px;" onclick="closeCategoryModal()">Close</button>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+</body>
+</html>

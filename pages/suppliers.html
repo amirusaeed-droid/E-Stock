@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Stock | Suppliers</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="../assets/logo/logo.png">
+      <h2>E-Stock</h2>
+      <p>Kondey Council</p>
+    </div>
+
+    <nav class="menu">
+      <a href="../dashboard.html">📊 Dashboard</a>
+      <a href="items.html">📦 Items</a>
+      <a href="categories.html">📂 Categories</a>
+      <a class="active" href="suppliers.html">🏢 Suppliers</a>
+      <a href="stock-in.html">📥 Stock In</a>
+      <a href="stock-out.html">📤 Stock Out</a>
+      <a href="requests.html">📝 Requests</a>
+      <a href="reports.html">📄 Reports</a>
+      <a href="users.html">👥 Users</a>
+      <a href="../login.html">🚪 Logout</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div>
+        <h1>Suppliers</h1>
+        <p>Manage item suppliers and contacts</p>
+      </div>
+      <button class="btn" onclick="addSupplier()">+ Add Supplier</button>
+    </header>
+
+    <section class="panel" style="margin-top:22px;">
+      <input class="search-box" style="width:100%;" id="searchSupplier" placeholder="Search supplier..." onkeyup="searchSuppliers()">
+
+      <table id="suppliersTable">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Supplier</th>
+            <th>Contact Person</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<div id="supplierModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:9999;">
+  <div style="background:white; width:550px; max-width:95%; margin:50px auto; padding:25px; border-radius:18px;">
+    <h2>Add / Edit Supplier</h2>
+    <br>
+
+    <input id="supplierName" placeholder="Supplier Name" style="width:100%;padding:12px;margin-bottom:10px;">
+    <input id="supplierContact" placeholder="Contact Person" style="width:100%;padding:12px;margin-bottom:10px;">
+    <input id="supplierPhone" placeholder="Phone" style="width:100%;padding:12px;margin-bottom:10px;">
+    <input id="supplierEmail" placeholder="Email" style="width:100%;padding:12px;margin-bottom:10px;">
+    <textarea id="supplierAddress" placeholder="Address / Remarks" style="width:100%;padding:12px;margin-bottom:10px;height:80px;"></textarea>
+
+    <button class="btn" onclick="saveSupplier()">Save Supplier</button>
+    <button class="btn" style="background:#999;margin-left:10px;" onclick="closeSupplierModal()">Close</button>
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+</body>
+</html>
