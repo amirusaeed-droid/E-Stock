@@ -18,7 +18,6 @@ function toggleDarkMode() {
 function searchItems() {
   const input = document.getElementById("searchItem").value.toLowerCase();
   const rows = document.querySelectorAll("#itemsTable tbody tr");
-
   rows.forEach(row => {
     row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
   });
@@ -49,15 +48,7 @@ function saveItem() {
   }
 
   const item = {
-    code,
-    name,
-    category,
-    unit,
-    supplier,
-    minStock,
-    stock,
-    location,
-    description,
+    code, name, category, unit, supplier, minStock, stock, location, description,
     status: Number(stock) <= Number(minStock || 5) ? "Low" : "Available"
   };
 
@@ -73,7 +64,6 @@ function saveItem() {
 function addItemToTable(item) {
   const table = document.querySelector("#itemsTable tbody");
   const row = table.insertRow();
-
   const badgeClass = item.status === "Low" ? "badge-danger" : "badge-success";
 
   row.innerHTML = `
@@ -95,18 +85,15 @@ function addItemToTable(item) {
 
 function deleteItem(code) {
   if (!confirm("Are you sure you want to delete this item?")) return;
-
   let items = JSON.parse(localStorage.getItem("estock_items")) || [];
   items = items.filter(item => item.code !== code);
   localStorage.setItem("estock_items", JSON.stringify(items));
-
   location.reload();
 }
 
 function editItem(code) {
   let items = JSON.parse(localStorage.getItem("estock_items")) || [];
   const item = items.find(i => i.code === code);
-
   if (!item) return;
 
   document.getElementById("itemCode").value = item.code;
@@ -121,17 +108,13 @@ function editItem(code) {
 
   items = items.filter(i => i.code !== code);
   localStorage.setItem("estock_items", JSON.stringify(items));
-
   addItem();
 }
 
 function clearItemForm() {
-  if (document.getElementById("itemCode")) document.getElementById("itemCode").value = "";
-  if (document.getElementById("itemName")) document.getElementById("itemName").value = "";
-  if (document.getElementById("itemMinStock")) document.getElementById("itemMinStock").value = "";
-  if (document.getElementById("itemStock")) document.getElementById("itemStock").value = "";
-  if (document.getElementById("itemLocation")) document.getElementById("itemLocation").value = "";
-  if (document.getElementById("itemDescription")) document.getElementById("itemDescription").value = "";
+  ["itemCode","itemName","itemMinStock","itemStock","itemLocation","itemDescription"].forEach(id => {
+    if (document.getElementById(id)) document.getElementById(id).value = "";
+  });
 }
 
 /* CATEGORIES */
@@ -153,16 +136,10 @@ function saveCategory() {
     return;
   }
 
-  const category = { name, description };
-
   let categories = JSON.parse(localStorage.getItem("estock_categories")) || [];
-  categories.push(category);
+  categories.push({ name, description });
   localStorage.setItem("estock_categories", JSON.stringify(categories));
-
-  addCategoryToTable(category, categories.length);
-  document.getElementById("categoryName").value = "";
-  document.getElementById("categoryDescription").value = "";
-  closeCategoryModal();
+  location.reload();
 }
 
 function addCategoryToTable(category, index) {
@@ -173,71 +150,26 @@ function addCategoryToTable(category, index) {
     <td>${index}</td>
     <td>${category.name}</td>
     <td>${category.description || "-"}</td>
-    <td>
-      <button class="btn" style="background:#dc2626;" onclick="deleteCategory('${category.name}')">Delete</button>
-    </td>
+    <td><button class="btn" style="background:#dc2626;" onclick="deleteCategory('${category.name}')">Delete</button></td>
   `;
 }
 
 function deleteCategory(name) {
   if (!confirm("Delete this category?")) return;
-
   let categories = JSON.parse(localStorage.getItem("estock_categories")) || [];
   categories = categories.filter(cat => cat.name !== name);
   localStorage.setItem("estock_categories", JSON.stringify(categories));
-
   location.reload();
 }
 
 function searchCategories() {
   const input = document.getElementById("searchCategory").value.toLowerCase();
   const rows = document.querySelectorAll("#categoriesTable tbody tr");
-
   rows.forEach(row => {
     row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
   });
 }
 
-/* PAGE LOAD */
-
-window.addEventListener("load", function () {
-
-  const itemsTable = document.getElementById("itemsTable");
-
-  if (itemsTable) {
-    const items = JSON.parse(localStorage.getItem("estock_items")) || [];
-    items.forEach(item => addItemToTable(item));
-  }
-
-  const categoriesTable = document.getElementById("categoriesTable");
-
-  if (categoriesTable) {
-    const categories = JSON.parse(localStorage.getItem("estock_categories")) || [];
-    categories.forEach((cat, index) => addCategoryToTable(cat, index + 1));
-  }
-
-  const suppliersTable = document.getElementById("suppliersTable");
-
-  if (suppliersTable) {
-    const suppliers = JSON.parse(localStorage.getItem("estock_suppliers")) || [];
-    suppliers.forEach((sup, index) => addSupplierToTable(sup, index + 1));
-  }
-
-  const stockInTable = document.getElementById("stockInTable");
-
-  if (stockInTable) {
-    const stockIn = JSON.parse(localStorage.getItem("estock_stock_in")) || [];
-    stockIn.forEach(record => addStockInToTable(record));
-  }
-
-  const stockOutTable = document.getElementById("stockOutTable");
-
-  if (stockOutTable) {
-    const stockOut = JSON.parse(localStorage.getItem("estock_stock_out")) || [];
-    stockOut.forEach(record => addStockOutToTable(record));
-  }
-
-});
 /* SUPPLIERS */
 
 function addSupplier() {
@@ -260,12 +192,9 @@ function saveSupplier() {
     return;
   }
 
-  const supplier = { name, contact, phone, email, address };
-
   let suppliers = JSON.parse(localStorage.getItem("estock_suppliers")) || [];
-  suppliers.push(supplier);
+  suppliers.push({ name, contact, phone, email, address });
   localStorage.setItem("estock_suppliers", JSON.stringify(suppliers));
-
   location.reload();
 }
 
@@ -279,30 +208,27 @@ function addSupplierToTable(supplier, index) {
     <td>${supplier.contact || "-"}</td>
     <td>${supplier.phone || "-"}</td>
     <td>${supplier.email || "-"}</td>
-    <td>
-      <button class="btn" style="background:#dc2626;" onclick="deleteSupplier('${supplier.name}')">Delete</button>
-    </td>
+    <td><button class="btn" style="background:#dc2626;" onclick="deleteSupplier('${supplier.name}')">Delete</button></td>
   `;
 }
 
 function deleteSupplier(name) {
   if (!confirm("Delete this supplier?")) return;
-
   let suppliers = JSON.parse(localStorage.getItem("estock_suppliers")) || [];
   suppliers = suppliers.filter(sup => sup.name !== name);
   localStorage.setItem("estock_suppliers", JSON.stringify(suppliers));
-
   location.reload();
 }
 
 function searchSuppliers() {
   const input = document.getElementById("searchSupplier").value.toLowerCase();
   const rows = document.querySelectorAll("#suppliersTable tbody tr");
-
   rows.forEach(row => {
     row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
   });
-}/* STOCK IN */
+}
+
+/* STOCK IN */
 
 function openStockIn() {
   document.getElementById("stockInModal").style.display = "block";
@@ -312,7 +238,8 @@ function openStockIn() {
   document.getElementById("stockInDate").value = today;
 
   const records = JSON.parse(localStorage.getItem("estock_stock_in")) || [];
-  document.getElementById("grnNo").value = "GRN-" + new Date().getFullYear() + "-" + String(records.length + 1).padStart(4, "0");
+  document.getElementById("grnNo").value =
+    "GRN-" + new Date().getFullYear() + "-" + String(records.length + 1).padStart(4, "0");
 }
 
 function closeStockIn() {
@@ -362,10 +289,10 @@ function saveStockIn() {
 
   item.stock = Number(item.stock) + qty;
   item.status = Number(item.stock) <= Number(item.minStock || 5) ? "Low" : "Available";
-
   localStorage.setItem("estock_items", JSON.stringify(items));
 
-  const record = {
+  let stockIn = JSON.parse(localStorage.getItem("estock_stock_in")) || [];
+  stockIn.push({
     grn,
     date,
     supplier,
@@ -375,10 +302,7 @@ function saveStockIn() {
     cost,
     total: qty * cost,
     remarks
-  };
-
-  let stockIn = JSON.parse(localStorage.getItem("estock_stock_in")) || [];
-  stockIn.push(record);
+  });
   localStorage.setItem("estock_stock_in", JSON.stringify(stockIn));
 
   closeStockIn();
@@ -399,7 +323,9 @@ function addStockInToTable(record) {
     <td>${record.total}</td>
     <td>${record.remarks || "-"}</td>
   `;
-}/* STOCK OUT */
+}
+
+/* STOCK OUT */
 
 function openStockOut() {
   document.getElementById("stockOutModal").style.display = "block";
@@ -422,7 +348,6 @@ function loadStockOutDropdown() {
   itemSelect.innerHTML = "";
 
   const items = JSON.parse(localStorage.getItem("estock_items")) || [];
-
   items.forEach(item => {
     itemSelect.innerHTML += `<option value="${item.code}">${item.code} - ${item.name} | Balance: ${item.stock}</option>`;
   });
@@ -457,10 +382,10 @@ function saveStockOut() {
 
   item.stock = Number(item.stock) - qty;
   item.status = Number(item.stock) <= Number(item.minStock || 5) ? "Low" : "Available";
-
   localStorage.setItem("estock_items", JSON.stringify(items));
 
-  const record = {
+  let stockOut = JSON.parse(localStorage.getItem("estock_stock_out")) || [];
+  stockOut.push({
     issueNo,
     date,
     department,
@@ -469,10 +394,7 @@ function saveStockOut() {
     qty,
     purpose,
     remarks
-  };
-
-  let stockOut = JSON.parse(localStorage.getItem("estock_stock_out")) || [];
-  stockOut.push(record);
+  });
   localStorage.setItem("estock_stock_out", JSON.stringify(stockOut));
 
   closeStockOut();
@@ -492,7 +414,11 @@ function addStockOutToTable(record) {
     <td>${record.purpose || "-"}</td>
     <td>${record.remarks || "-"}</td>
   `;
-}function loadDashboardStats() {
+}
+
+/* DASHBOARD */
+
+function loadDashboardStats() {
   const items = JSON.parse(localStorage.getItem("estock_items")) || [];
   const categories = JSON.parse(localStorage.getItem("estock_categories")) || [];
   const suppliers = JSON.parse(localStorage.getItem("estock_suppliers")) || [];
@@ -530,21 +456,14 @@ function addStockOutToTable(record) {
   const activityBox = document.getElementById("dashRecentActivity");
   if (activityBox) {
     activityBox.innerHTML = "";
-
     const recent = [];
 
     stockIn.slice(-3).forEach(r => {
-      recent.push({
-        title: "Stock received",
-        text: `${r.qty} ${r.itemName} received from ${r.supplier}`
-      });
+      recent.push({ title: "Stock received", text: `${r.qty} ${r.itemName} received from ${r.supplier}` });
     });
 
     stockOut.slice(-3).forEach(r => {
-      recent.push({
-        title: "Stock issued",
-        text: `${r.qty} ${r.itemName} issued to ${r.department}`
-      });
+      recent.push({ title: "Stock issued", text: `${r.qty} ${r.itemName} issued to ${r.department}` });
     });
 
     recent.slice(-5).reverse().forEach(a => {
@@ -561,3 +480,156 @@ function addStockOutToTable(record) {
     }
   }
 }
+
+/* REPORTS */
+
+function showStockBalanceReport() {
+  setReportDate();
+  document.getElementById("reportTitle").innerText = "Stock Balance Report";
+
+  const items = JSON.parse(localStorage.getItem("estock_items")) || [];
+  let html = `<table><thead><tr>
+    <th>Code</th><th>Item</th><th>Category</th><th>Unit</th><th>Supplier</th><th>Balance</th><th>Status</th>
+  </tr></thead><tbody>`;
+
+  items.forEach(item => {
+    html += `<tr>
+      <td>${item.code}</td><td>${item.name}</td><td>${item.category}</td>
+      <td>${item.unit || "-"}</td><td>${item.supplier || "-"}</td>
+      <td>${item.stock}</td><td>${item.status}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  document.getElementById("reportContent").innerHTML = html;
+}
+
+function showStockInReport() {
+  setReportDate();
+  document.getElementById("reportTitle").innerText = "Stock In Report";
+
+  const records = JSON.parse(localStorage.getItem("estock_stock_in")) || [];
+  let html = `<table><thead><tr>
+    <th>GRN</th><th>Date</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Total</th>
+  </tr></thead><tbody>`;
+
+  records.forEach(r => {
+    html += `<tr>
+      <td>${r.grn}</td><td>${r.date}</td><td>${r.supplier}</td>
+      <td>${r.itemName}</td><td>${r.qty}</td><td>${r.total}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  document.getElementById("reportContent").innerHTML = html;
+}
+
+function showStockOutReport() {
+  setReportDate();
+  document.getElementById("reportTitle").innerText = "Stock Out Report";
+
+  const records = JSON.parse(localStorage.getItem("estock_stock_out")) || [];
+  let html = `<table><thead><tr>
+    <th>Issue No</th><th>Date</th><th>Issued To</th><th>Item</th><th>Qty</th><th>Purpose</th>
+  </tr></thead><tbody>`;
+
+  records.forEach(r => {
+    html += `<tr>
+      <td>${r.issueNo}</td><td>${r.date}</td><td>${r.department}</td>
+      <td>${r.itemName}</td><td>${r.qty}</td><td>${r.purpose || "-"}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  document.getElementById("reportContent").innerHTML = html;
+}
+
+function showLowStockReport() {
+  setReportDate();
+  document.getElementById("reportTitle").innerText = "Low Stock Report";
+
+  const items = JSON.parse(localStorage.getItem("estock_items")) || [];
+  const lowItems = items.filter(item => Number(item.stock) <= Number(item.minStock || 5));
+
+  let html = `<table><thead><tr>
+    <th>Code</th><th>Item</th><th>Minimum</th><th>Balance</th><th>Status</th>
+  </tr></thead><tbody>`;
+
+  lowItems.forEach(item => {
+    html += `<tr>
+      <td>${item.code}</td><td>${item.name}</td>
+      <td>${item.minStock || 5}</td><td>${item.stock}</td><td>Low</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  document.getElementById("reportContent").innerHTML = html;
+}
+
+function setReportDate() {
+  const el = document.getElementById("reportDate");
+  if (el) {
+    el.innerText = "Generated: " + new Date().toLocaleString();
+  }
+}
+
+function exportReportCSV() {
+  const table = document.querySelector("#reportContent table");
+
+  if (!table) {
+    alert("Please select a report first");
+    return;
+  }
+
+  let csv = [];
+  const rows = table.querySelectorAll("tr");
+
+  rows.forEach(row => {
+    const cols = row.querySelectorAll("th, td");
+    const rowData = [];
+    cols.forEach(col => rowData.push('"' + col.innerText.replace(/"/g, '""') + '"'));
+    csv.push(rowData.join(","));
+  });
+
+  const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "E-Stock-Report.csv";
+  link.click();
+}
+
+/* PAGE LOAD */
+
+window.addEventListener("load", function () {
+  const itemsTable = document.getElementById("itemsTable");
+  if (itemsTable) {
+    const items = JSON.parse(localStorage.getItem("estock_items")) || [];
+    items.forEach(item => addItemToTable(item));
+  }
+
+  const categoriesTable = document.getElementById("categoriesTable");
+  if (categoriesTable) {
+    const categories = JSON.parse(localStorage.getItem("estock_categories")) || [];
+    categories.forEach((cat, index) => addCategoryToTable(cat, index + 1));
+  }
+
+  const suppliersTable = document.getElementById("suppliersTable");
+  if (suppliersTable) {
+    const suppliers = JSON.parse(localStorage.getItem("estock_suppliers")) || [];
+    suppliers.forEach((sup, index) => addSupplierToTable(sup, index + 1));
+  }
+
+  const stockInTable = document.getElementById("stockInTable");
+  if (stockInTable) {
+    const stockIn = JSON.parse(localStorage.getItem("estock_stock_in")) || [];
+    stockIn.forEach(record => addStockInToTable(record));
+  }
+
+  const stockOutTable = document.getElementById("stockOutTable");
+  if (stockOutTable) {
+    const stockOut = JSON.parse(localStorage.getItem("estock_stock_out")) || [];
+    stockOut.forEach(record => addStockOutToTable(record));
+  }
+
+  loadDashboardStats();
+});
