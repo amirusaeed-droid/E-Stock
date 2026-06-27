@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Stock | Stock Adjustment</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="../assets/logo/logo.png" alt="Logo">
+      <h2>E-Stock</h2>
+      <p>Kondey Council</p>
+    </div>
+
+    <nav class="menu">
+      <a href="../dashboard.html">📊 Dashboard</a>
+      <a href="items.html">📦 Items</a>
+      <a href="stock-in.html">📥 Stock In</a>
+      <a href="stock-out.html">📤 Stock Out</a>
+      <a href="requests.html">📝 Requests</a>
+      <a href="adjustments.html" class="active">⚙ Stock Adjustment</a>
+      <a href="reports.html">📄 Reports</a>
+      <a href="users.html">👥 Users</a>
+      <a href="../login.html">🚪 Logout</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+    <header class="topbar">
+      <div>
+        <h1>Stock Adjustment</h1>
+        <p>Correct stock balance for damaged, missing or counted items</p>
+      </div>
+
+      <button class="btn" onclick="openAdjustmentModal()">+ New Adjustment</button>
+    </header>
+
+    <section class="panel" style="margin-top:22px;">
+      <h2>Adjustment History</h2>
+
+      <table id="adjustmentsTable">
+        <thead>
+          <tr>
+            <th>Adjustment No</th>
+            <th>Date</th>
+            <th>Item</th>
+            <th>Old Stock</th>
+            <th>New Stock</th>
+            <th>Difference</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<div id="adjustmentModal"
+     style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;
+     background:rgba(0,0,0,0.65);z-index:9999999;overflow:auto;">
+
+  <div style="background:#fff;width:650px;max-width:95%;
+              margin:50px auto;padding:20px;border-radius:12px;">
+
+    <h2>New Stock Adjustment</h2>
+
+    <input id="adjustmentNo" type="text" placeholder="Adjustment No" readonly
+           style="width:100%;padding:10px;margin-bottom:10px;background:#f3f4f6;">
+
+    <input id="adjustmentDate" type="date"
+           style="width:100%;padding:10px;margin-bottom:10px;">
+
+    <select id="adjustmentItem" onchange="showCurrentStock()"
+            style="width:100%;padding:10px;margin-bottom:10px;">
+      <option value="">Select Item</option>
+    </select>
+
+    <input id="adjustmentOldStock" type="number" placeholder="Current Stock" readonly
+           style="width:100%;padding:10px;margin-bottom:10px;background:#f3f4f6;">
+
+    <input id="adjustmentNewStock" type="number" placeholder="New Stock Balance"
+           style="width:100%;padding:10px;margin-bottom:10px;">
+
+    <select id="adjustmentReason" style="width:100%;padding:10px;margin-bottom:10px;">
+      <option value="">Select Reason</option>
+      <option>Physical count correction</option>
+      <option>Damaged item</option>
+      <option>Missing item</option>
+      <option>Expired / unusable item</option>
+      <option>Data entry correction</option>
+      <option>Other</option>
+    </select>
+
+    <textarea id="adjustmentRemarks" placeholder="Remarks"
+              style="width:100%;padding:10px;margin-bottom:10px;height:80px;"></textarea>
+
+    <button class="btn" onclick="saveAdjustment()">Save Adjustment</button>
+    <button class="btn" type="button" style="background:#999;margin-left:10px;"
+            onclick="document.getElementById('adjustmentModal').style.display='none'">
+      Close
+    </button>
+
+  </div>
+</div>
+
+<script src="../js/app.js"></script>
+<script src="../js/adjustments.js"></script>
+</body>
+</html>

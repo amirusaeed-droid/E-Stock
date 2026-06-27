@@ -26,6 +26,9 @@ function searchItems() {
 function addItem() {
   document.getElementById("itemModal").style.display = "block";
 
+  loadItemCategories();
+  loadItemSuppliers();
+
   const items = JSON.parse(localStorage.getItem("estock_items")) || [];
   const nextNo = 10001 + items.length;
 
@@ -71,7 +74,22 @@ function saveItem() {
 function addItemToTable(item) {
   const table = document.querySelector("#itemsTable tbody");
   const row = table.insertRow();
-  const badgeClass = item.status === "Low" ? "badge-danger" : "badge-success";
+
+  const stock = Number(item.stock || 0);
+  const minStock = Number(item.minStock || 5);
+
+  let statusText = "Available";
+  let badgeClass = "badge-success";
+
+  if (stock <= 0) {
+    statusText = "Out of Stock";
+    badgeClass = "badge-danger";
+  } else if (stock <= minStock) {
+    statusText = "Low Stock";
+    badgeClass = "badge-warning";
+  }
+
+  item.status = statusText;
 
   row.innerHTML = `
     <td>${item.code}</td>
@@ -82,7 +100,7 @@ function addItemToTable(item) {
     <td>${item.minStock || "-"}</td>
     <td>${item.stock}</td>
     <td>${item.location || "-"}</td>
-    <td><span class="badge ${badgeClass}">${item.status}</span></td>
+    <td><span class="badge ${badgeClass}">${statusText}</span></td>
     <td>
       <button class="btn" onclick="editItem('${item.code}')">Edit</button>
       <button class="btn" style="background:#dc2626;" onclick="deleteItem('${item.code}')">Delete</button>
@@ -257,19 +275,29 @@ function loadStockInDropdowns() {
   const supplierSelect = document.getElementById("stockInSupplier");
   const itemSelect = document.getElementById("stockInItem");
 
-  supplierSelect.innerHTML = "";
-  itemSelect.innerHTML = "";
+  if (supplierSelect) supplierSelect.innerHTML = "";
+  if (itemSelect) itemSelect.innerHTML = "";
 
   const suppliers = JSON.parse(localStorage.getItem("estock_suppliers")) || [];
   const items = JSON.parse(localStorage.getItem("estock_items")) || [];
 
-  suppliers.forEach(supplier => {
-    supplierSelect.innerHTML += `<option value="${supplier.name}">${supplier.name}</option>`;
-  });
+  if (supplierSelect) {
+    suppliers.forEach(supplier => {
+      supplierSelect.innerHTML += `<option value="${supplier.name}">${supplier.name}</option>`;
+    });
+  }
 
-  items.forEach(item => {
-    itemSelect.innerHTML += `<option value="${item.code}">${item.code} - ${item.name}</option>`;
-  });
+  if (itemSelect) {
+    itemSelect.innerHTML = `<option value="">Select Item</option>`;
+
+    items.forEach(item => {
+      itemSelect.innerHTML += `
+        <option value="${item.code}">
+          ${item.code} - ${item.name} | Balance: ${item.stock}
+        </option>
+      `;
+    });
+  }
 }
 
 function saveStockIn() {
@@ -426,66 +454,29 @@ function addStockOutToTable(record) {
 /* DASHBOARD */
 
 function loadDashboardStats() {
+
   const items = JSON.parse(localStorage.getItem("estock_items")) || [];
-  const categories = JSON.parse(localStorage.getItem("estock_categories")) || [];
-  const suppliers = JSON.parse(localStorage.getItem("estock_suppliers")) || [];
-  const stockIn = JSON.parse(localStorage.getItem("estock_stock_in")) || [];
-  const stockOut = JSON.parse(localStorage.getItem("estock_stock_out")) || [];
+  const requests = JSON.parse(localStorage.getItem("estock_requests")) || [];
 
-  const lowItems = items.filter(item => Number(item.stock) <= Number(item.minStock || 5));
+  const pending = requests.filter(r => r.status === "Pending").length;
+  const approved = requests.filter(r => r.status === "Approved").length;
+  const rejected = requests.filter(r => r.status === "Rejected").length;
 
-  if (document.getElementById("dashTotalItems")) {
-    document.getElementById("dashTotalItems").innerText = items.length;
-    document.getElementById("dashLowStock").innerText = lowItems.length;
-    document.getElementById("dashSuppliers").innerText = suppliers.length;
-    document.getElementById("dashCategories").innerText = categories.length;
-  }
+  const lowStock = items.filter(item =>
+    Number(item.stock || 0) <= Number(item.minStock || 5)
+  ).length;
 
-  const lowTable = document.getElementById("dashLowStockTable");
-  if (lowTable) {
-    lowTable.innerHTML = "";
-    lowItems.forEach(item => {
-      lowTable.innerHTML += `
-        <tr>
-          <td>${item.code}</td>
-          <td>${item.name}</td>
-          <td>${item.stock}</td>
-          <td><span class="badge badge-danger">Low</span></td>
-        </tr>
-      `;
-    });
+  if (document.getElementById("pendingRequests"))
+    document.getElementById("pendingRequests").textContent = pending;
 
-    if (lowItems.length === 0) {
-      lowTable.innerHTML = `<tr><td colspan="4">No low stock items</td></tr>`;
-    }
-  }
+  if (document.getElementById("approvedRequests"))
+    document.getElementById("approvedRequests").textContent = approved;
 
-  const activityBox = document.getElementById("dashRecentActivity");
-  if (activityBox) {
-    activityBox.innerHTML = "";
-    const recent = [];
+  if (document.getElementById("rejectedRequests"))
+    document.getElementById("rejectedRequests").textContent = rejected;
 
-    stockIn.slice(-3).forEach(r => {
-      recent.push({ title: "Stock received", text: `${r.qty} ${r.itemName} received from ${r.supplier}` });
-    });
-
-    stockOut.slice(-3).forEach(r => {
-      recent.push({ title: "Stock issued", text: `${r.qty} ${r.itemName} issued to ${r.department}` });
-    });
-
-    recent.slice(-5).reverse().forEach(a => {
-      activityBox.innerHTML += `
-        <div class="activity-item">
-          <strong>${a.title}</strong>
-          <span>${a.text}</span>
-        </div>
-      `;
-    });
-
-    if (recent.length === 0) {
-      activityBox.innerHTML = `<div class="activity-item"><strong>No recent activity</strong><span>Stock movements will appear here.</span></div>`;
-    }
-  }
+  if (document.getElementById("lowStockItems"))
+    document.getElementById("lowStockItems").textContent = lowStock;
 }
 
 /* REPORTS */
@@ -662,6 +653,33 @@ function exportReportCSV() {
   link.download = "E-Stock-Report.csv";
   link.click();
 }
+
+function loadItemCategories() {
+  const select = document.getElementById("itemCategory");
+  if (!select) return;
+
+  const categories = JSON.parse(localStorage.getItem("estock_categories")) || [];
+
+  select.innerHTML = `<option value="">Select Category</option>`;
+
+  categories.forEach(cat => {
+    select.innerHTML += `<option>${cat.name}</option>`;
+  });
+}
+
+function loadItemSuppliers() {
+  const select = document.getElementById("itemSupplier");
+  if (!select) return;
+
+  const suppliers = JSON.parse(localStorage.getItem("estock_suppliers")) || [];
+
+  select.innerHTML = `<option value="">Select Supplier</option>`;
+
+  suppliers.forEach(sup => {
+    select.innerHTML += `<option>${sup.name}</option>`;
+  });
+}
+
 /* PAGE LOAD */
 
 window.addEventListener("load", function () {

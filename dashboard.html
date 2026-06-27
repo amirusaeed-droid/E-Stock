@@ -1,141 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>E-Stock Dashboard</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Stock | Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <img src="assets/logo/logo.png" alt="Kondey Council Logo" />
-        <h2>E-Stock</h2>
-        <p>Kondey Council</p>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="assets/logo/logo.png" alt="Logo">
+      <h2>E-Stock</h2>
+      <p>Kondey Council</p>
+    </div>
+
+    <nav class="menu">
+      <a href="dashboard.html" class="active">📊 Dashboard</a>
+      <a href="pages/items.html">📦 Items</a>
+      <a href="pages/stock-in.html">📥 Stock In</a>
+      <a href="pages/stock-out.html">📤 Stock Out</a>
+      <a href="pages/requests.html">📝 Requests</a>
+      <a href="pages/reports.html">📄 Reports</a>
+      <a href="pages/users.html">👥 Users</a>
+      <a href="login.html">🚪 Logout</a>
+    </nav>
+  </aside>
+
+  <main class="main-content dashboard-modern">
+
+    <header class="dashboard-top">
+      <div>
+        <h1>Dashboard</h1>
+        <p>Inventory overview and activity summary</p>
+      </div>
+      <div class="admin-box">👤 Admin</div>
+    </header>
+
+    <section class="welcome-box">
+      <h2>Welcome, Admin! 👋</h2>
+      <p>Here is your inventory overview and latest request status.</p>
+    </section>
+
+    <section class="dashboard-cards">
+      <div class="dash-card yellow">
+        <div class="dash-icon">📄</div>
+        <h2 id="pendingRequests">0</h2>
+        <p>Pending Requests</p>
       </div>
 
-      <nav class="menu">
-        <a href="dashboard.html" class="active">📊 Dashboard</a>
-        <a href="pages/items.html">📦 Items</a>
-        <a href="pages/categories.html">📂 Categories</a>
-        <a href="pages/suppliers.html">🏢 Suppliers</a>
-        <a href="pages/stock-in.html">📥 Stock In</a>
-        <a href="pages/stock-out.html">📤 Stock Out</a>
-        <a href="pages/requests.html">📝 Requests</a>
-        <a href="pages/reports.html">📄 Reports</a>
-        <a href="pages/users.html">👥 Users</a>
-        <a href="login.html">🚪 Logout</a>
-      </nav>
-    </aside>
+      <div class="dash-card green">
+        <div class="dash-icon">✅</div>
+        <h2 id="approvedRequests">0</h2>
+        <p>Approved Requests</p>
+      </div>
 
-    <main class="main-content">
-      <header class="topbar">
-        <div>
-          <h1>Dashboard</h1>
-          <p>Welcome to E-Stock Enterprise System</p>
+      <div class="dash-card red">
+        <div class="dash-icon">❌</div>
+        <h2 id="rejectedRequests">0</h2>
+        <p>Rejected Requests</p>
+      </div>
+
+      <div class="dash-card orange">
+        <div class="dash-icon">⚠️</div>
+        <h2 id="lowStockItems">0</h2>
+        <p>Low Stock Items</p>
+      </div>
+    </section>
+
+    <section class="dashboard-grid">
+
+      <div class="dashboard-panel">
+        <h2>📦 Inventory Summary</h2>
+
+        <div class="summary-row">
+          <span>Total Items</span>
+          <strong id="totalItems">0</strong>
         </div>
 
-        <div class="top-actions">
-          <input class="search-box" placeholder="Search items, requests..." />
-          <button class="btn" onclick="toggleDarkMode()">🌙 Dark</button>
-        </div>
-      </header>
-
-      <section class="hero">
-        <div>
-          <h2>Secretariat of Kondey Council</h2>
-          <p>Advanced Inventory & Stock Management System</p>
-        </div>
-      </section>
-
-      <section class="stats-grid">
-        <div class="stat-card">
-          <div class="icon">📦</div>
-          <h3>Total Items</h3>
-          <strong id="dashTotalItems">0</strong>
+        <div class="summary-row">
+          <span>Total Stock Quantity</span>
+          <strong id="totalStockQty">0</strong>
         </div>
 
-        <div class="stat-card">
-          <div class="icon">⚠️</div>
-          <h3>Low Stock Items</h3>
-          <strong id="dashLowStock">0</strong>
+        <div class="summary-row">
+          <span>Total Stock Value</span>
+          <strong id="totalStockValue">0.00</strong>
         </div>
 
-        <div class="stat-card">
-          <div class="icon">🏢</div>
-          <h3>Total Suppliers</h3>
-          <strong id="dashSuppliers">0</strong>
+        <div class="summary-row">
+          <span>Low Stock Items</span>
+          <strong id="summaryLowStock">0</strong>
         </div>
 
-        <div class="stat-card">
-          <div class="icon">📂</div>
-          <h3>Categories</h3>
-          <strong id="dashCategories">0</strong>
-        </div>
-      </section>
+        <a class="view-link" href="pages/items.html">View All Items →</a>
+      </div>
 
-      <section class="content-grid">
-        <div class="panel">
-          <h2>Low Stock Alerts</h2>
+      <div class="dashboard-panel">
+        <h2>📋 Recent Requests</h2>
 
-          <table>
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Item</th>
-                <th>Balance</th>
-                <th>Status</th>
-              </tr>
-            </thead>
+        <table>
+          <thead>
+            <tr>
+              <th>Request No</th>
+              <th>Department</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="recentRequestsTable"></tbody>
+        </table>
+      </div>
 
-            <tbody id="dashLowStockTable"></tbody>
-          </table>
-        </div>
+    </section>
 
-        <div class="panel">
-          <h2>Recent Activity</h2>
-          <div id="dashRecentActivity"></div>
-        </div>
-      </section>
+    <footer class="simple-footer">
+      Developed by Amir Saeed
+    </footer>
 
-      <footer style="margin-top:30px;padding:20px;text-align:center;border-top:1px solid #ddd;">
-        <div style="margin-bottom:15px;">
-          <button class="btn" onclick="window.location.href='tutorial.html'">
-            📖 Tutorial
-          </button>
+  </main>
 
-          <button class="btn" style="margin-left:10px;" onclick="window.open('https://wa.me/9609662499')">
-            🆘 Call for Help
-          </button>
-        </div>
+</div>
 
-        <div style="font-weight:bold;font-size:16px;">
-          Developed by Amir Saeed
-        </div>
-
-        <div style="font-size:13px;color:#666;">
-          Secretary General | Secretariat of Kondey Council
-        </div>
-
-        <div style="margin-top:10px;">
-          <a href="https://www.facebook.com/amir.saeedh/" target="_blank" style="text-decoration:none;font-size:24px;margin:0 8px;">📘</a>
-          <a href="https://x.com/amirusaeed" target="_blank" style="text-decoration:none;font-size:24px;margin:0 8px;">𝕏</a>
-          <a href="https://www.linkedin.com/feed/" target="_blank" style="text-decoration:none;font-size:24px;margin:0 8px;">🔗</a>
-        </div>
-
-        <div style="margin-top:8px;font-size:14px;color:#666;">
-          Mobile: +960 9662499
-        </div>
-
-        <div style="margin-top:10px;color:#666;font-size:13px;">
-          E-Stock Inventory Management System © 2026
-        </div>
-      </footer>
-    </main>
-  </div>
-
-  <script src="js/app.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>

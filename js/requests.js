@@ -2,40 +2,81 @@ let requestItems = [];
 
 function openRequestModal() {
   document.getElementById("requestModal").style.display = "block";
+
+  const requests = JSON.parse(localStorage.getItem("estock_requests")) || [];
+  document.getElementById("requestNo").value =
+    "REQ-" + new Date().getFullYear() + "-" + String(requests.length + 1).padStart(4, "0");
+
+  document.getElementById("requestDate").value = new Date().toISOString().split("T")[0];
+
+  requestItems = [];
+  renderRequestItems();
+  loadItemSuggestions();
 }
 
 function closeRequestModal() {
   document.getElementById("requestModal").style.display = "none";
 }
 
-function addRequestItem() {
-  const item = document.getElementById("requestItem").value.trim();
-  const qty = document.getElementById("requestQty").value.trim();
+function loadItemSuggestions() {
+  const list = document.getElementById("stockItemsList");
+  if (!list) return;
 
-  if (!item || !qty) {
-    alert("Please enter item and quantity");
+  const items = JSON.parse(localStorage.getItem("estock_items")) || [];
+
+  list.innerHTML = "";
+
+  items.forEach(item => {
+    list.innerHTML += `<option value="${item.name}" label="${item.code} - ${item.name} | Balance: ${item.stock}"></option>`;
+  });
+}
+
+function addRequestItem() {
+  const itemInput = document.getElementById("requestItem");
+  const qtyInput = document.getElementById("requestQty");
+
+  const itemName = itemInput.value.trim();
+  const qty = qtyInput.value.trim();
+
+  if (!itemName || !qty) {
+    alert("Please select item and enter quantity");
     return;
   }
 
-  requestItems.push({ item, qty });
+  const items = JSON.parse(localStorage.getItem("estock_items")) || [];
+  const foundItem = items.find(i => i.name === itemName || i.code === itemName);
+
+  if (!foundItem) {
+    alert("This item is not found in Items list. Please add the item first.");
+    return;
+  }
+
+  requestItems.push({
+    item: foundItem.name,
+    code: foundItem.code,
+    qty: Number(qty)
+  });
+
   renderRequestItems();
 
-  document.getElementById("requestItem").value = "";
-  document.getElementById("requestQty").value = "";
+  itemInput.value = "";
+  qtyInput.value = "";
 }
 
 function renderRequestItems() {
   const table = document.querySelector("#requestItemsTable tbody");
+  if (!table) return;
+
   table.innerHTML = "";
 
   requestItems.forEach((row, index) => {
     table.innerHTML += `
       <tr>
         <td>${index + 1}</td>
-        <td>${row.item}</td>
+        <td>${row.code} - ${row.item}</td>
         <td>${row.qty}</td>
         <td>
-          <button class="btn" style="background:#dc2626;" onclick="removeRequestItem(${index})">Remove</button>
+          <button class="btn" type="button" style="background:#dc2626;" onclick="removeRequestItem(${index})">Remove</button>
         </td>
       </tr>
     `;
@@ -50,7 +91,7 @@ function removeRequestItem(index) {
 function saveRequest() {
   const requestNo = document.getElementById("requestNo").value.trim();
   const date = document.getElementById("requestDate").value;
-  const department = document.getElementById("requestDepartment").value.trim();
+  const department = document.getElementById("requestDepartment").value;
 
   const fileInput = document.getElementById("requestFile");
   const fileName = fileInput && fileInput.files.length > 0 ? fileInput.files[0].name : "";
@@ -96,7 +137,7 @@ function loadRequests() {
 
     if (request.items && Array.isArray(request.items)) {
       itemsHtml = request.items
-        .map(item => `${item.item} (${item.qty})`)
+        .map(item => `${item.code || ""} ${item.item} (${item.qty})`)
         .join("<br>");
     } else {
       itemsHtml = request.item ? `${request.item} (${request.qty})` : "-";
@@ -110,19 +151,15 @@ function loadRequests() {
         <td>${itemsHtml}</td>
         <td>${request.fileName || "-"}</td>
         <td>${getStatusBadge(request.status || "Pending")}</td>
-<td>
-  <button class="btn" onclick="approveRequest('${request.requestNo}')">Approve</button>
-  <button class="btn" style="background:#dc2626;" onclick="rejectRequest('${request.requestNo}')">Reject</button>
-</td>
+        <td>
+          <button class="btn" type="button" onclick="approveRequest('${request.requestNo}')">Approve</button>
+          <button class="btn" type="button" style="background:#dc2626;" onclick="rejectRequest('${request.requestNo}')">Reject</button>
+        </td>
       </tr>
     `;
   });
 }
 
-window.addEventListener("load", function () {
-  loadRequests();
-  loadItemSuggestions();
-});
 function getStatusBadge(status) {
   if (status === "Approved") {
     return '<span class="badge badge-success">Approved</span>';
@@ -149,8 +186,13 @@ function approveRequest(requestNo) {
     return;
   }
 
-  for (let reqItem of request.items) {
-    const item = items.find(i => i.name === reqItem.item || i.code === reqItem.item);
+  if (request.status === "Approved") {
+    alert("This request is already approved");
+    return;
+  }
+
+  for (const reqItem of request.items) {
+    const item = items.find(i => i.name === reqItem.item || i.code === reqItem.code);
 
     if (!item) {
       alert("Item not found: " + reqItem.item);
@@ -164,7 +206,7 @@ function approveRequest(requestNo) {
   }
 
   request.items.forEach(reqItem => {
-    const item = items.find(i => i.name === reqItem.item || i.code === reqItem.item);
+    const item = items.find(i => i.name === reqItem.item || i.code === reqItem.code);
 
     item.stock = Number(item.stock) - Number(reqItem.qty);
     item.status = Number(item.stock) <= Number(item.minStock || 5) ? "Low" : "Available";
@@ -207,23 +249,9 @@ function updateRequestStatus(requestNo, status) {
 
   localStorage.setItem("estock_requests", JSON.stringify(requests));
   location.reload();
+}
 
-}window.addEventListener("load", function () {
+window.addEventListener("load", function () {
   loadRequests();
   loadItemSuggestions();
 });
-
-function loadItemSuggestions() {
-  const items = JSON.parse(localStorage.getItem("estock_items")) || [];
-  const list = document.getElementById("stockItemsList");
-
-  if (!list) return;
-
-  list.innerHTML = "";
-
-  items.forEach(item => {
-    list.innerHTML += `
-      <option value="${item.name}">
-    `;
-  });
-}
