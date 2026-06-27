@@ -110,7 +110,11 @@ function loadRequests() {
         <td>${request.department || "-"}</td>
         <td>${itemsHtml}</td>
         <td>${request.fileName || "-"}</td>
-        <td>${request.status || "Pending"}</td>
+        <td>${getStatusBadge(request.status || "Pending")}</td>
+<td>
+  <button class="btn" onclick="approveRequest('${request.requestNo}')">Approve</button>
+  <button class="btn" style="background:#dc2626;" onclick="rejectRequest('${request.requestNo}')">Reject</button>
+</td>
       </tr>
     `;
   });
@@ -118,3 +122,36 @@ function loadRequests() {
 
 window.addEventListener("load", loadRequests);
 setTimeout(loadRequests, 500);
+function getStatusBadge(status) {
+  if (status === "Approved") {
+    return '<span class="badge badge-success">Approved</span>';
+  }
+
+  if (status === "Rejected") {
+    return '<span class="badge badge-danger">Rejected</span>';
+  }
+
+  return '<span class="badge">Pending</span>';
+}
+
+function approveRequest(requestNo) {
+  updateRequestStatus(requestNo, "Approved");
+}
+
+function rejectRequest(requestNo) {
+  updateRequestStatus(requestNo, "Rejected");
+}
+
+function updateRequestStatus(requestNo, status) {
+  let requests = JSON.parse(localStorage.getItem("estock_requests")) || [];
+
+  requests = requests.map(request => {
+    if (request.requestNo === requestNo) {
+      request.status = status;
+    }
+    return request;
+  });
+
+  localStorage.setItem("estock_requests", JSON.stringify(requests));
+  location.reload();
+}
