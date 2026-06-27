@@ -46,7 +46,6 @@
     </header>
 
     <section class="stats-grid no-print">
-
       <div class="stat-card" onclick="showStockBalanceReport()" style="cursor:pointer;">
         <div class="icon">📦</div>
         <h3>Stock Balance</h3>
@@ -70,11 +69,33 @@
         <h3>Low Stock</h3>
         <strong>View</strong>
       </div>
+    </section>
 
+    <section class="panel no-print" style="margin-top:22px;">
+      <h2>Report Filters</h2>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div>
+          <label style="display:block;font-size:13px;margin-bottom:4px;">From Date</label>
+          <input type="date" id="reportFromDate" style="padding:10px;border:1px solid #ddd;border-radius:8px;">
+        </div>
+
+        <div>
+          <label style="display:block;font-size:13px;margin-bottom:4px;">To Date</label>
+          <input type="date" id="reportToDate" style="padding:10px;border:1px solid #ddd;border-radius:8px;">
+        </div>
+
+        <button class="btn" onclick="showStockInReport()" style="margin-top:20px;">
+          Filter Stock In
+        </button>
+
+        <button class="btn" onclick="showStockOutReport()" style="margin-top:20px;">
+          Filter Stock Out
+        </button>
+      </div>
     </section>
 
     <section class="panel" style="margin-top:22px;">
-
       <div style="text-align:center;margin-bottom:20px;">
         <img src="../assets/logo/logo.png" style="width:70px;">
         <h2>Secretariat of Kondey Council</h2>
@@ -86,7 +107,6 @@
       <div id="reportContent">
         <p>Please select a report type above.</p>
       </div>
-
     </section>
 
   </main>

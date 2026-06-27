@@ -488,15 +488,20 @@ function showStockBalanceReport() {
   document.getElementById("reportTitle").innerText = "Stock Balance Report";
 
   const items = JSON.parse(localStorage.getItem("estock_items")) || [];
+
   let html = `<table><thead><tr>
     <th>Code</th><th>Item</th><th>Category</th><th>Unit</th><th>Supplier</th><th>Balance</th><th>Status</th>
   </tr></thead><tbody>`;
 
   items.forEach(item => {
     html += `<tr>
-      <td>${item.code}</td><td>${item.name}</td><td>${item.category}</td>
-      <td>${item.unit || "-"}</td><td>${item.supplier || "-"}</td>
-      <td>${item.stock}</td><td>${item.status}</td>
+      <td>${item.code}</td>
+      <td>${item.name}</td>
+      <td>${item.category}</td>
+      <td>${item.unit || "-"}</td>
+      <td>${item.supplier || "-"}</td>
+      <td>${item.stock}</td>
+      <td>${item.status}</td>
     </tr>`;
   });
 
@@ -508,40 +513,90 @@ function showStockInReport() {
   setReportDate();
   document.getElementById("reportTitle").innerText = "Stock In Report";
 
-  const records = JSON.parse(localStorage.getItem("estock_stock_in")) || [];
-  let html = `<table><thead><tr>
+  const fromDate = document.getElementById("reportFromDate")?.value;
+  const toDate = document.getElementById("reportToDate")?.value;
+
+  let records = JSON.parse(localStorage.getItem("estock_stock_in")) || [];
+
+  if (fromDate && toDate) {
+    records = records.filter(r => r.date >= fromDate && r.date <= toDate);
+  }
+
+  let totalQty = 0;
+  let totalValue = 0;
+
+  let html = `<div style="margin-bottom:15px;">
+    <strong>Total Records:</strong> ${records.length} |
+    <strong>Total Quantity:</strong> <span id="stockInTotalQty">0</span> |
+    <strong>Total Value:</strong> MVR <span id="stockInTotalValue">0</span>
+  </div>`;
+
+  html += `<table><thead><tr>
     <th>GRN</th><th>Date</th><th>Supplier</th><th>Item</th><th>Qty</th><th>Total</th>
   </tr></thead><tbody>`;
 
   records.forEach(r => {
+    totalQty += Number(r.qty || 0);
+    totalValue += Number(r.total || 0);
+
     html += `<tr>
-      <td>${r.grn}</td><td>${r.date}</td><td>${r.supplier}</td>
-      <td>${r.itemName}</td><td>${r.qty}</td><td>${r.total}</td>
+      <td>${r.grn}</td>
+      <td>${r.date}</td>
+      <td>${r.supplier}</td>
+      <td>${r.itemName}</td>
+      <td>${r.qty}</td>
+      <td>${r.total}</td>
     </tr>`;
   });
 
   html += `</tbody></table>`;
   document.getElementById("reportContent").innerHTML = html;
+
+  document.getElementById("stockInTotalQty").innerText = totalQty;
+  document.getElementById("stockInTotalValue").innerText = totalValue.toFixed(2);
 }
 
 function showStockOutReport() {
   setReportDate();
   document.getElementById("reportTitle").innerText = "Stock Out Report";
 
-  const records = JSON.parse(localStorage.getItem("estock_stock_out")) || [];
-  let html = `<table><thead><tr>
+  const fromDate = document.getElementById("reportFromDate")?.value;
+  const toDate = document.getElementById("reportToDate")?.value;
+
+  let records = JSON.parse(localStorage.getItem("estock_stock_out")) || [];
+
+  if (fromDate && toDate) {
+    records = records.filter(r => r.date >= fromDate && r.date <= toDate);
+  }
+
+  let totalQty = 0;
+
+  let html = `<div style="margin-bottom:15px;">
+    <strong>Total Records:</strong> ${records.length} |
+    <strong>Total Quantity Issued:</strong> <span id="stockOutTotalQty">0</span>
+  </div>`;
+
+  html += `<table><thead><tr>
     <th>Issue No</th><th>Date</th><th>Issued To</th><th>Item</th><th>Qty</th><th>Purpose</th>
   </tr></thead><tbody>`;
 
   records.forEach(r => {
+    totalQty += Number(r.qty || 0);
+
     html += `<tr>
-      <td>${r.issueNo}</td><td>${r.date}</td><td>${r.department}</td>
-      <td>${r.itemName}</td><td>${r.qty}</td><td>${r.purpose || "-"}</td>
+      <td>${r.issueNo}</td>
+      <td>${r.date}</td>
+      <td>${r.department}</td>
+      <td>${r.itemName}</td>
+      <td>${r.qty}</td>
+      <td>${r.purpose || "-"}</td>
     </tr>`;
   });
 
   html += `</tbody></table>`;
   document.getElementById("reportContent").innerHTML = html;
+
+  document.getElementById("stockOutTotalQty").innerText = totalQty;
 }
 
 function showLowStockReport() {
@@ -557,8 +612,11 @@ function showLowStockReport() {
 
   lowItems.forEach(item => {
     html += `<tr>
-      <td>${item.code}</td><td>${item.name}</td>
-      <td>${item.minStock || 5}</td><td>${item.stock}</td><td>Low</td>
+      <td>${item.code}</td>
+      <td>${item.name}</td>
+      <td>${item.minStock || 5}</td>
+      <td>${item.stock}</td>
+      <td>Low</td>
     </tr>`;
   });
 
@@ -597,7 +655,6 @@ function exportReportCSV() {
   link.download = "E-Stock-Report.csv";
   link.click();
 }
-
 /* PAGE LOAD */
 
 window.addEventListener("load", function () {
