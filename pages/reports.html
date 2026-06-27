@@ -1,2 +1,97 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>E-Stock - Reports</title><link rel="stylesheet" href="../css/style.css"></head><body><div style="padding:30px"><h1>Reports</h1><p>This module will be built next.</p><a href="../dashboard.html">Back to Dashboard</a></div></body></html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Stock | Reports</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="../assets/logo/logo.png">
+      <h2>E-Stock</h2>
+      <p>Kondey Council</p>
+    </div>
+
+    <nav class="menu">
+      <a href="../dashboard.html">📊 Dashboard</a>
+      <a href="items.html">📦 Items</a>
+      <a href="categories.html">📂 Categories</a>
+      <a href="suppliers.html">🏢 Suppliers</a>
+      <a href="stock-in.html">📥 Stock In</a>
+      <a href="stock-out.html">📤 Stock Out</a>
+      <a href="requests.html">📝 Requests</a>
+      <a class="active" href="reports.html">📄 Reports</a>
+      <a href="users.html">👥 Users</a>
+      <a href="../login.html">🚪 Logout</a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+    <header class="topbar no-print">
+      <div>
+        <h1>Reports</h1>
+        <p>Generate stock reports for office use</p>
+      </div>
+
+      <div>
+        <button class="btn" onclick="exportReportCSV()">📊 Export CSV</button>
+        <button class="btn" onclick="window.print()">🖨️ Print</button>
+      </div>
+    </header>
+
+    <section class="stats-grid no-print">
+
+      <div class="stat-card" onclick="showStockBalanceReport()" style="cursor:pointer;">
+        <div class="icon">📦</div>
+        <h3>Stock Balance</h3>
+        <strong>View</strong>
+      </div>
+
+      <div class="stat-card" onclick="showStockInReport()" style="cursor:pointer;">
+        <div class="icon">📥</div>
+        <h3>Stock In</h3>
+        <strong>View</strong>
+      </div>
+
+      <div class="stat-card" onclick="showStockOutReport()" style="cursor:pointer;">
+        <div class="icon">📤</div>
+        <h3>Stock Out</h3>
+        <strong>View</strong>
+      </div>
+
+      <div class="stat-card" onclick="showLowStockReport()" style="cursor:pointer;">
+        <div class="icon">⚠️</div>
+        <h3>Low Stock</h3>
+        <strong>View</strong>
+      </div>
+
+    </section>
+
+    <section class="panel" style="margin-top:22px;">
+
+      <div style="text-align:center;margin-bottom:20px;">
+        <img src="../assets/logo/logo.png" style="width:70px;">
+        <h2>Secretariat of Kondey Council</h2>
+        <p>E-Stock Inventory Management System</p>
+        <p><strong id="reportTitle">Select a report</strong></p>
+        <p id="reportDate"></p>
+      </div>
+
+      <div id="reportContent">
+        <p>Please select a report type above.</p>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script src="../js/app.js"></script>
+</body>
+</html>
