@@ -85,16 +85,37 @@
     <input id="requestDate" type="date"
            style="width:100%;padding:10px;margin-bottom:10px;">
 
-    <input id="requestDepartment" type="text" placeholder="Department"
-           style="width:100%;padding:10px;margin-bottom:10px;">
+    <select id="requestDepartment" style="width:100%;padding:10px;margin-bottom:10px;">
+      <option value="">Select Department</option>
+      <option>Administration</option>
+      <option>Council Office</option>
+      <option>WDC</option>
+      <option>Pre-School</option>
+      <option>Mosque</option>
+      <option>Waste Management</option>
+      <option>Public Area</option>
+      <option>Other</option>
+</select>
 
     <h3>Requested Items</h3>
 
-    <div style="display:flex;gap:8px;margin-bottom:10px;">
-      <input id="requestItem" type="text" placeholder="Item" style="flex:2;padding:10px;">
-      <input id="requestQty" type="number" placeholder="Qty" style="flex:1;padding:10px;">
-      <button class="btn" type="button" onclick="addRequestItem()">Add</button>
-    </div>
+<div style="display:flex;gap:8px;margin-bottom:10px;">
+
+  <input id="requestItem"
+         list="stockItemsList"
+         placeholder="Search Item"
+         style="flex:2;padding:10px;">
+
+  <datalist id="stockItemsList"></datalist>
+
+  <input id="requestQty"
+         type="number"
+         placeholder="Qty"
+         style="flex:1;padding:10px;">
+
+  <button class="btn" type="button" onclick="addRequestItem()">Add</button>
+
+</div>
 
     <table id="requestItemsTable" style="margin-bottom:10px;">
       <thead>
@@ -104,9 +125,7 @@
           <th>Action</th>
         </tr>
       </thead>
-      <tbody></tbody>
-    </table>
-
+    
     <label>Attach Request Form</label>
     <input id="requestFile" type="file" accept=".pdf,.jpg,.jpeg,.png"
            style="width:100%;padding:10px;margin-bottom:10px;">

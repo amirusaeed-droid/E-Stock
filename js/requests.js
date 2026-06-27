@@ -26,13 +26,12 @@ function addRequestItem() {
 
 function renderRequestItems() {
   const table = document.querySelector("#requestItemsTable tbody");
-  if (!table) return;
-
   table.innerHTML = "";
 
   requestItems.forEach((row, index) => {
     table.innerHTML += `
       <tr>
+        <td>${index + 1}</td>
         <td>${row.item}</td>
         <td>${row.qty}</td>
         <td>
@@ -120,8 +119,10 @@ function loadRequests() {
   });
 }
 
-window.addEventListener("load", loadRequests);
-setTimeout(loadRequests, 500);
+window.addEventListener("load", function () {
+  loadRequests();
+  loadItemSuggestions();
+});
 function getStatusBadge(status) {
   if (status === "Approved") {
     return '<span class="badge badge-success">Approved</span>';
@@ -135,7 +136,59 @@ function getStatusBadge(status) {
 }
 
 function approveRequest(requestNo) {
-  updateRequestStatus(requestNo, "Approved");
+  if (!confirm("Approve this request and issue stock?")) return;
+
+  let requests = JSON.parse(localStorage.getItem("estock_requests")) || [];
+  let items = JSON.parse(localStorage.getItem("estock_items")) || [];
+  let stockOut = JSON.parse(localStorage.getItem("estock_stock_out")) || [];
+
+  const request = requests.find(r => r.requestNo === requestNo);
+
+  if (!request) {
+    alert("Request not found");
+    return;
+  }
+
+  for (let reqItem of request.items) {
+    const item = items.find(i => i.name === reqItem.item || i.code === reqItem.item);
+
+    if (!item) {
+      alert("Item not found: " + reqItem.item);
+      return;
+    }
+
+    if (Number(item.stock) < Number(reqItem.qty)) {
+      alert("Not enough stock for: " + reqItem.item);
+      return;
+    }
+  }
+
+  request.items.forEach(reqItem => {
+    const item = items.find(i => i.name === reqItem.item || i.code === reqItem.item);
+
+    item.stock = Number(item.stock) - Number(reqItem.qty);
+    item.status = Number(item.stock) <= Number(item.minStock || 5) ? "Low" : "Available";
+
+    stockOut.push({
+      issueNo: "ISS-" + new Date().getFullYear() + "-" + String(stockOut.length + 1).padStart(4, "0"),
+      date: new Date().toISOString().split("T")[0],
+      department: request.department,
+      itemCode: item.code,
+      itemName: item.name,
+      qty: Number(reqItem.qty),
+      purpose: "Issued against " + request.requestNo,
+      remarks: "Auto issued from approved request"
+    });
+  });
+
+  request.status = "Approved";
+
+  localStorage.setItem("estock_items", JSON.stringify(items));
+  localStorage.setItem("estock_stock_out", JSON.stringify(stockOut));
+  localStorage.setItem("estock_requests", JSON.stringify(requests));
+
+  alert("Request approved and stock issued");
+  location.reload();
 }
 
 function rejectRequest(requestNo) {
@@ -154,4 +207,23 @@ function updateRequestStatus(requestNo, status) {
 
   localStorage.setItem("estock_requests", JSON.stringify(requests));
   location.reload();
+
+}window.addEventListener("load", function () {
+  loadRequests();
+  loadItemSuggestions();
+});
+
+function loadItemSuggestions() {
+  const items = JSON.parse(localStorage.getItem("estock_items")) || [];
+  const list = document.getElementById("stockItemsList");
+
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  items.forEach(item => {
+    list.innerHTML += `
+      <option value="${item.name}">
+    `;
+  });
 }

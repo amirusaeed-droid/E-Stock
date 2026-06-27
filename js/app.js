@@ -25,6 +25,13 @@ function searchItems() {
 
 function addItem() {
   document.getElementById("itemModal").style.display = "block";
+
+  const items = JSON.parse(localStorage.getItem("estock_items")) || [];
+  const nextNo = 10001 + items.length;
+
+  if (document.getElementById("itemCode")) {
+    document.getElementById("itemCode").value = "ITM-" + nextNo;
+  }
 }
 
 function closeModal() {
