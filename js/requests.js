@@ -1,3 +1,5 @@
+let requestItems = [];
+
 function openRequestModal() {
   document.getElementById("requestModal").style.display = "block";
 }
@@ -5,40 +7,6 @@ function openRequestModal() {
 function closeRequestModal() {
   document.getElementById("requestModal").style.display = "none";
 }
-
-function saveRequest() {
-  const requestNo = document.getElementById("requestNo").value.trim();
-  const date = document.getElementById("requestDate").value;
-  const department = document.getElementById("requestDepartment").value.trim();
-  const item = document.getElementById("requestItem").value.trim();
-  const qty = document.getElementById("requestQty").value.trim();
-
-  const fileInput = document.getElementById("requestFile");
-  const fileName = fileInput && fileInput.files.length > 0 ? fileInput.files[0].name : "";
-
-  if (!requestNo || !date || !department || !item || !qty) {
-    alert("Please fill all required fields");
-    return;
-  }
-
-  const request = {
-    requestNo,
-    date,
-    department,
-    item,
-    qty,
-    fileName,
-    status: "Pending"
-  };
-
-  let requests = JSON.parse(localStorage.getItem("estock_requests")) || [];
-  requests.push(request);
-  localStorage.setItem("estock_requests", JSON.stringify(requests));
-
-  alert("Request saved successfully");
-  closeRequestModal();
-  location.reload();
-}let requestItems = [];
 
 function addRequestItem() {
   const item = document.getElementById("requestItem").value.trim();
@@ -58,6 +26,8 @@ function addRequestItem() {
 
 function renderRequestItems() {
   const table = document.querySelector("#requestItemsTable tbody");
+  if (!table) return;
+
   table.innerHTML = "";
 
   requestItems.forEach((row, index) => {
@@ -77,3 +47,74 @@ function removeRequestItem(index) {
   requestItems.splice(index, 1);
   renderRequestItems();
 }
+
+function saveRequest() {
+  const requestNo = document.getElementById("requestNo").value.trim();
+  const date = document.getElementById("requestDate").value;
+  const department = document.getElementById("requestDepartment").value.trim();
+
+  const fileInput = document.getElementById("requestFile");
+  const fileName = fileInput && fileInput.files.length > 0 ? fileInput.files[0].name : "";
+
+  if (!requestNo || !date || !department) {
+    alert("Please fill request number, date and department");
+    return;
+  }
+
+  if (requestItems.length === 0) {
+    alert("Please add at least one item");
+    return;
+  }
+
+  const request = {
+    requestNo,
+    date,
+    department,
+    items: [...requestItems],
+    fileName,
+    status: "Pending"
+  };
+
+  let requests = JSON.parse(localStorage.getItem("estock_requests")) || [];
+  requests.push(request);
+  localStorage.setItem("estock_requests", JSON.stringify(requests));
+
+  alert("Request saved successfully");
+  closeRequestModal();
+  location.reload();
+}
+
+function loadRequests() {
+  const table = document.querySelector("#requestsTable tbody");
+  if (!table) return;
+
+  table.innerHTML = "";
+
+  const requests = JSON.parse(localStorage.getItem("estock_requests")) || [];
+
+  requests.forEach(request => {
+    let itemsHtml = "";
+
+    if (request.items && Array.isArray(request.items)) {
+      itemsHtml = request.items
+        .map(item => `${item.item} (${item.qty})`)
+        .join("<br>");
+    } else {
+      itemsHtml = request.item ? `${request.item} (${request.qty})` : "-";
+    }
+
+    table.innerHTML += `
+      <tr>
+        <td>${request.requestNo || "-"}</td>
+        <td>${request.date || "-"}</td>
+        <td>${request.department || "-"}</td>
+        <td>${itemsHtml}</td>
+        <td>${request.fileName || "-"}</td>
+        <td>${request.status || "Pending"}</td>
+      </tr>
+    `;
+  });
+}
+
+window.addEventListener("load", loadRequests);
+setTimeout(loadRequests, 500);
