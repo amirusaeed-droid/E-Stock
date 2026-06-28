@@ -1,54 +1,111 @@
+let editingUserId = null;
+
 function openUserModal() {
+  editingUserId = null;
+
   document.getElementById("userModal").style.display = "block";
+
+  document.getElementById("fullName").value = "";
+  document.getElementById("username").value = "";
+  document.getElementById("password").value = "";
+  document.getElementById("role").value = "";
+  document.getElementById("status").value = "Active";
 }
 
 function closeUserModal() {
   document.getElementById("userModal").style.display = "none";
 }
 
-function saveUser() {
+async function saveUser() {
   const fullName = document.getElementById("fullName").value.trim();
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
   const role = document.getElementById("role").value;
   const status = document.getElementById("status").value;
 
-  if (!fullName || !username || !password || !role) {
-    alert("Please fill all required fields");
+  if (!fullName || !username || !role) {
+    alert("Please fill full name, username and role");
     return;
   }
 
-  let users = JSON.parse(localStorage.getItem("estock_users")) || [];
-
-  if (users.some(u => u.username === username)) {
-    alert("Username already exists");
+  if (!editingUserId && !password) {
+    alert("Please enter password");
     return;
   }
 
-  users.push({ fullName, username, password, role, status });
-  localStorage.setItem("estock_users", JSON.stringify(users));
+  if (editingUserId) {
+    const updateData = {
+      full_name: fullName,
+      username: username,
+      role: role,
+      status: status
+    };
+
+    if (password) {
+      updateData.password = password;
+    }
+
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${editingUserId}`, {
+      method: "PATCH",
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=representation"
+      },
+      body: JSON.stringify(updateData)
+    });
+
+    if (!response.ok) {
+      alert("Failed to update user");
+      return;
+    }
+
+    alert("User updated successfully");
+    location.reload();
+    return;
+  }
+
+  const newUser = {
+    full_name: fullName,
+    username: username,
+    password: password,
+    role: role,
+    status: status
+  };
+
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation"
+    },
+    body: JSON.stringify(newUser)
+  });
+
+  if (!response.ok) {
+    alert("Failed to save user. Username may already exist.");
+    return;
+  }
 
   alert("User saved successfully");
   location.reload();
 }
 
-function loadUsers() {
+async function loadUsers() {
   const table = document.querySelector("#usersTable tbody");
   if (!table) return;
 
-  let users = JSON.parse(localStorage.getItem("estock_users")) || [];
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&order=id.asc`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
 
-  if (users.length === 0) {
-    users.push({
-      fullName: "System Administrator",
-      username: "admin",
-      password: "admin123",
-      role: "Admin",
-      status: "Active"
-    });
-
-    localStorage.setItem("estock_users", JSON.stringify(users));
-  }
+  const users = await response.json();
 
   table.innerHTML = "";
 
@@ -58,62 +115,74 @@ function loadUsers() {
     table.innerHTML += `
       <tr>
         <td>${user.username}</td>
-        <td>${user.fullName}</td>
+        <td>${user.full_name}</td>
         <td>${user.role}</td>
         <td><span class="badge ${statusClass}">${user.status}</span></td>
         <td>
-          <button class="btn" type="button" onclick="editUser('${user.username}')">Edit</button>
-          <button class="btn" type="button" style="background:#7c3aed;" onclick="changePassword('${user.username}')">Password</button>
-          <button class="btn" type="button" style="background:#dc2626;" onclick="deleteUser('${user.username}')">Delete</button>
+          <button class="btn" type="button" onclick="editUser(${user.id})">Edit</button>
+          <button class="btn" type="button" style="background:#7c3aed;" onclick="changePassword(${user.id})">Password</button>
+          <button class="btn" type="button" style="background:#dc2626;" onclick="deleteUser(${user.id}, '${user.username}')">Delete</button>
         </td>
       </tr>
     `;
   });
 }
 
-function editUser(username) {
-  let users = JSON.parse(localStorage.getItem("estock_users")) || [];
-  const user = users.find(u => u.username === username);
+async function editUser(id) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&id=eq.${id}`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
 
-  if (!user) return;
+  const users = await response.json();
+  const user = users[0];
 
-  const fullName = prompt("Full Name:", user.fullName);
-  if (fullName === null) return;
+  if (!user) {
+    alert("User not found");
+    return;
+  }
 
-  const role = prompt("Role: Admin / Secretary General / Store Keeper / Requester / Viewer", user.role);
-  if (role === null) return;
+  editingUserId = user.id;
 
-  const status = prompt("Status: Active / Inactive", user.status);
-  if (status === null) return;
+  document.getElementById("userModal").style.display = "block";
 
-  user.fullName = fullName.trim() || user.fullName;
-  user.role = role.trim() || user.role;
-  user.status = status.trim() || user.status;
-
-  localStorage.setItem("estock_users", JSON.stringify(users));
-  location.reload();
+  document.getElementById("fullName").value = user.full_name || "";
+  document.getElementById("username").value = user.username || "";
+  document.getElementById("password").value = "";
+  document.getElementById("role").value = user.role || "";
+  document.getElementById("status").value = user.status || "Active";
 }
 
-function changePassword(username) {
-  let users = JSON.parse(localStorage.getItem("estock_users")) || [];
-  const user = users.find(u => u.username === username);
-
-  if (!user) return;
-
-  const newPassword = prompt("Enter new password for " + username + ":");
+async function changePassword(id) {
+  const newPassword = prompt("Enter new password:");
 
   if (!newPassword) {
     alert("Password not changed");
     return;
   }
 
-  user.password = newPassword;
-  localStorage.setItem("estock_users", JSON.stringify(users));
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${id}`, {
+    method: "PATCH",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation"
+    },
+    body: JSON.stringify({ password: newPassword })
+  });
+
+  if (!response.ok) {
+    alert("Failed to change password");
+    return;
+  }
 
   alert("Password changed successfully");
 }
 
-function deleteUser(username) {
+async function deleteUser(id, username) {
   if (username === "admin") {
     alert("Default admin user cannot be deleted");
     return;
@@ -121,10 +190,20 @@ function deleteUser(username) {
 
   if (!confirm("Delete this user?")) return;
 
-  let users = JSON.parse(localStorage.getItem("estock_users")) || [];
-  users = users.filter(user => user.username !== username);
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${id}`, {
+    method: "DELETE",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
 
-  localStorage.setItem("estock_users", JSON.stringify(users));
+  if (!response.ok) {
+    alert("Failed to delete user");
+    return;
+  }
+
+  alert("User deleted successfully");
   location.reload();
 }
 

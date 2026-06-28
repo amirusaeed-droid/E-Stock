@@ -33,7 +33,6 @@ async function login() {
   localStorage.setItem("estock_logged_user", JSON.stringify(foundUser));
 
   window.location.href = "dashboard.html";
-}
 
 function toggleDarkMode() {
   document.body.classList.toggle("dark-mode");
