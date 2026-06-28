@@ -823,3 +823,29 @@ function restoreData(event) {
 
   reader.readAsText(file);
 }
+```javascript
+function logout() {
+  localStorage.removeItem("estock_logged_user");
+}
+
+function checkLogin() {
+
+  const loggedUser =
+    localStorage.getItem("estock_logged_user");
+
+  const isLoginPage =
+    window.location.pathname.includes("login.html");
+
+  if (!loggedUser && !isLoginPage) {
+
+    if (window.location.pathname.includes("/pages/")) {
+      window.location.href = "../login.html";
+    } else {
+      window.location.href = "login.html";
+    }
+
+  }
+}
+
+window.addEventListener("load", checkLogin);
+```
