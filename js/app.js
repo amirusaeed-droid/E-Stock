@@ -7,10 +7,7 @@ async function login() {
     return;
   }
 
-  const url =
-    `${SUPABASE_URL}/rest/v1/users?select=*&username=eq.${encodeURIComponent(username)}&password=eq.${encodeURIComponent(password)}&status=eq.Active`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*`, {
     headers: {
       apikey: SUPABASE_KEY,
       Authorization: `Bearer ${SUPABASE_KEY}`
@@ -19,21 +16,22 @@ async function login() {
 
   const users = await response.json();
 
-  if (!users || users.length === 0) {
+  console.log("Users from Supabase:", users);
+
+  const foundUser = users.find(user =>
+    user.username === username &&
+    user.password === password &&
+    user.status === "Active"
+  );
+
+  if (!foundUser) {
     alert("Wrong username, password or inactive account");
     return;
   }
 
-  localStorage.setItem("estock_logged_user", JSON.stringify(users[0]));
+  localStorage.setItem("estock_logged_user", JSON.stringify(foundUser));
   window.location.href = "dashboard.html";
 }
-
-  const foundUser = users[0];
-
-  localStorage.setItem("estock_logged_user", JSON.stringify(foundUser));
-
-  window.location.href = "dashboard.html";
-
 function toggleDarkMode() {
   document.body.classList.toggle("dark-mode");
 }
@@ -844,10 +842,11 @@ function checkLogin() {
 }
 
 function applyRolePermissions() {
-  const user = JSON.parse(localStorage.getItem("estock_logged_user"));
+  const storedUser = localStorage.getItem("estock_logged_user");
 
-  if (!user) return;
+  if (!storedUser) return;
 
+  const user = JSON.parse(storedUser);
   const role = user.role;
 
   document.querySelectorAll("[data-role]").forEach(el => {

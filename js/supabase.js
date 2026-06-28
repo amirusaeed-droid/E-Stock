@@ -1,6 +1,6 @@
 const SUPABASE_URL = "https://ebeqpzyyjcihweyodccc.supabase.co";
 
-const SUPABASE_KEY = "sb_publishable_HDwkdB4mfPXOIxi9-7ZczQ_q3P9MaO6";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImViZXFwenl5amNpaHdleW9kY2NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2MzAwNDMsImV4cCI6MjA5ODIwNjA0M30.umsP_C5y7DvML8UvSMmXVZSLDor8BgLURtLGeCARnIg";
 
 async function supabaseSelect(table) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
