@@ -7,14 +7,26 @@ async function login() {
     return;
   }
 
-  const users = await supabaseSelect(
-    `users&username=eq.${username}&password=eq.${password}&status=eq.Active`
-  );
+  const url =
+    `${SUPABASE_URL}/rest/v1/users?select=*&username=eq.${encodeURIComponent(username)}&password=eq.${encodeURIComponent(password)}&status=eq.Active`;
+
+  const response = await fetch(url, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
+
+  const users = await response.json();
 
   if (!users || users.length === 0) {
     alert("Wrong username, password or inactive account");
     return;
   }
+
+  localStorage.setItem("estock_logged_user", JSON.stringify(users[0]));
+  window.location.href = "dashboard.html";
+}
 
   const foundUser = users[0];
 
