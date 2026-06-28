@@ -73,7 +73,8 @@ function renderRequestItems() {
     table.innerHTML += `
       <tr>
         <td>${index + 1}</td>
-        <td>${row.code} - ${row.item}</td>
+        <td>${row.code}</td>
+        <td>${row.item}</td>
         <td>${row.qty}</td>
         <td>
           <button class="btn" type="button" style="background:#dc2626;" onclick="removeRequestItem(${index})">Remove</button>
@@ -149,13 +150,44 @@ function loadRequests() {
         <td>${request.date || "-"}</td>
         <td>${request.department || "-"}</td>
         <td>${itemsHtml}</td>
-        <td>${request.fileName || "-"}</td>
-        <td>${getStatusBadge(request.status || "Pending")}</td>
+
         <td>
-          <button class="btn" type="button" onclick="approveRequest('${request.requestNo}')">Approve</button>
-          <button class="btn" type="button" style="background:#dc2626;" onclick="rejectRequest('${request.requestNo}')">Reject</button>
+          ${request.fileName || "-"}<br>
+          <input type="file"
+                 accept=".pdf,.jpg,.jpeg,.png"
+                 onchange="uploadRequestForm('${request.requestNo}', this)"
+                 style="width:160px;">
         </td>
-      </tr>
+
+        <td>${getStatusBadge(request.status || "Pending")}</td>
+
+<td>
+  <button class="btn" type="button" onclick="approveRequest('${request.requestNo}')">Approve</button>
+
+  <button class="btn" type="button"
+          style="background:#f59e0b;"
+          onclick="issueRequest('${request.requestNo}')">
+    Issue
+  </button>
+
+  <button class="btn" type="button"
+          style="background:#16a34a;"
+          onclick="completeRequest('${request.requestNo}')">
+    Complete
+  </button>
+
+  <button class="btn" type="button"
+          style="background:#dc2626;"
+          onclick="rejectRequest('${request.requestNo}')">
+    Reject
+  </button>
+
+  <button class="btn" type="button"
+          style="background:#2563eb;"
+          onclick="printRequest('${request.requestNo}')">
+    Print
+  </button>
+</td>
     `;
   });
 }
@@ -232,6 +264,13 @@ function approveRequest(requestNo) {
   alert("Request approved and stock issued");
   location.reload();
 }
+function issueRequest(requestNo) {
+  updateRequestStatus(requestNo, "Issued");
+}
+
+function completeRequest(requestNo) {
+  updateRequestStatus(requestNo, "Completed");
+}
 
 function rejectRequest(requestNo) {
   updateRequestStatus(requestNo, "Rejected");
@@ -255,3 +294,215 @@ window.addEventListener("load", function () {
   loadRequests();
   loadItemSuggestions();
 });
+function addRequestItem() {
+  const itemName = document.getElementById("requestItem").value.trim();
+  const qty = document.getElementById("requestQty").value.trim();
+
+  if (!itemName || !qty) {
+    alert("Please select item and enter quantity");
+    return;
+  }
+
+  const items = JSON.parse(localStorage.getItem("estock_items")) || [];
+  const foundItem = items.find(i => i.name === itemName || i.code === itemName);
+
+  if (!foundItem) {
+    alert("Item not found in Items list");
+    return;
+  }
+
+  requestItems.push({
+    code: foundItem.code,
+    item: foundItem.name,
+    qty: Number(qty)
+  });
+
+  renderRequestItems();
+
+  document.getElementById("requestItem").value = "";
+  document.getElementById("requestQty").value = "";
+}
+function uploadRequestForm(requestNo, input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  let requests = JSON.parse(localStorage.getItem("estock_requests")) || [];
+
+  requests = requests.map(request => {
+    if (request.requestNo === requestNo) {
+      request.fileName = file.name;
+    }
+    return request;
+  });
+
+  localStorage.setItem("estock_requests", JSON.stringify(requests));
+
+  alert("Request form uploaded");
+  location.reload();
+}
+function printRequest(requestNo) {
+
+  const requests = JSON.parse(localStorage.getItem("estock_requests")) || [];
+  const request = requests.find(r => r.requestNo === requestNo);
+
+  if (!request) {
+    alert("Request not found");
+    return;
+  }
+
+  const itemsHtml = request.items.map((item, index) => `
+    <tr>
+      <td>${index + 1}</td>
+      <td>${request.date}</td>
+      <td>${item.item}</td>
+      <td>${item.code || "-"}</td>
+      <td></td>
+      <td>${item.qty}</td>
+    </tr>
+  `).join("");
+
+  const win = window.open("", "_blank");
+
+  win.document.write(`
+  <html>
+  <head>
+    <title>Services & Goods Requisition Form</title>
+
+    <style>
+      body{
+        font-family:Arial,sans-serif;
+        margin:20px;
+        color:#000;
+      }
+
+      h2,h3{
+        text-align:center;
+        margin:3px;
+      }
+
+      .info{
+        margin-top:15px;
+        margin-bottom:15px;
+      }
+
+      .info div{
+        margin-bottom:5px;
+      }
+
+      table{
+        width:100%;
+        border-collapse:collapse;
+      }
+
+      th,td{
+        border:1px solid #000;
+        padding:6px;
+        font-size:12px;
+      }
+
+      th{
+        background:#f3f4f6;
+      }
+
+      .signatures{
+        margin-top:30px;
+      }
+
+      .signatures td{
+        height:45px;
+      }
+
+      .footer{
+        text-align:center;
+        margin-top:20px;
+        font-size:11px;
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+    <h2>Secretariat of Kondey Council</h2>
+    <h3>Services & Goods Requisition Form</h3>
+
+    <div class="info">
+      <div><strong>Request No:</strong> ${request.requestNo}</div>
+      <div><strong>Date:</strong> ${request.date}</div>
+      <div><strong>Department:</strong> ${request.department}</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Remarks</th>
+          <th>Request Date</th>
+          <th>Item Name</th>
+          <th>Item Code</th>
+          <th>Issued Qty</th>
+          <th>Requested Qty</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        ${itemsHtml}
+      </tbody>
+    </table>
+
+    <table class="signatures">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Signature</th>
+          <th>Name</th>
+          <th>Function</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>Requested By</td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>Authorised By</td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>Issued By</td>
+        </tr>
+
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>Goods Received By</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:20px;">
+      <strong>General Remarks:</strong>
+      <br><br><br>
+    </div>
+
+    <div class="footer">
+      Developed by Amir Saeed
+    </div>
+
+  </body>
+  </html>
+  `);
+
+  win.document.close();
+  win.print();
+}
