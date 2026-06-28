@@ -1,32 +1,22 @@
-function login() {
+async function login() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  let users = JSON.parse(localStorage.getItem("estock_users")) || [];
-
-  if (users.length === 0) {
-    users = [
-      {
-        fullName: "System Administrator",
-        username: "admin",
-        password: "admin123",
-        role: "Admin",
-        status: "Active"
-      }
-    ];
-    localStorage.setItem("estock_users", JSON.stringify(users));
+  if (!username || !password) {
+    alert("Please enter username and password");
+    return;
   }
 
-  const foundUser = users.find(user =>
-    user.username === username &&
-    user.password === password &&
-    user.status === "Active"
+  const users = await supabaseSelect(
+    `users&username=eq.${username}&password=eq.${password}&status=eq.Active`
   );
 
-  if (!foundUser) {
+  if (!users || users.length === 0) {
     alert("Wrong username, password or inactive account");
     return;
   }
+
+  const foundUser = users[0];
 
   localStorage.setItem("estock_logged_user", JSON.stringify(foundUser));
 
