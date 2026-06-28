@@ -1,12 +1,36 @@
 function login() {
-  const user = document.getElementById("username").value.trim();
-  const pass = document.getElementById("password").value.trim();
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-  if (user === "admin" && pass === "admin123") {
-    window.location.href = "dashboard.html";
-  } else {
-    alert("Wrong username or password");
+  let users = JSON.parse(localStorage.getItem("estock_users")) || [];
+
+  if (users.length === 0) {
+    users = [
+      {
+        fullName: "System Administrator",
+        username: "admin",
+        password: "admin123",
+        role: "Admin",
+        status: "Active"
+      }
+    ];
+    localStorage.setItem("estock_users", JSON.stringify(users));
   }
+
+  const foundUser = users.find(user =>
+    user.username === username &&
+    user.password === password &&
+    user.status === "Active"
+  );
+
+  if (!foundUser) {
+    alert("Wrong username, password or inactive account");
+    return;
+  }
+
+  localStorage.setItem("estock_logged_user", JSON.stringify(foundUser));
+
+  window.location.href = "dashboard.html";
 }
 
 function toggleDarkMode() {
