@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,17 +19,17 @@
     </div>
 
     <nav class="menu">
-      <a href="../dashboard.html">📊 Dashboard</a>
-      <a href="items.html">📦 Items</a>
-      <a href="categories.html">📂 Categories</a>
-      <a href="suppliers.html">🏢 Suppliers</a>
-      <a href="stock-in.html">📥 Stock In</a>
-      <a href="stock-out.html">📤 Stock Out</a>
-      <a href="requests.html">📝 Requests</a>
-      <a href="adjustments.html">⚙ Stock Adjustment</a>
-      <a href="reports.html">📄 Reports</a>
-      <a href="users.html" class="active">👥 Users</a>
-      <a href="../login.html">🚪 Logout</a>
+      <a href="../dashboard.html" data-role="Admin,Secretary General,Store Keeper,Requester,Viewer">📊 Dashboard</a>
+      <a href="items.html" data-role="Admin,Store Keeper">📦 Items</a>
+      <a href="categories.html" data-role="Admin,Store Keeper">📂 Categories</a>
+      <a href="suppliers.html" data-role="Admin,Store Keeper">🏢 Suppliers</a>
+      <a href="stock-in.html" data-role="Admin,Store Keeper">📥 Stock In</a>
+      <a href="stock-out.html" data-role="Admin,Store Keeper">📤 Stock Out</a>
+      <a href="requests.html" data-role="Admin,Secretary General,Store Keeper,Requester">📝 Requests</a>
+      <a href="adjustments.html" data-role="Admin,Store Keeper">⚙ Stock Adjustment</a>
+      <a href="reports.html" data-role="Admin,Secretary General,Store Keeper,Viewer">📄 Reports</a>
+      <a href="users.html" class="active" data-role="Admin">👥 Users</a>
+      <a href="../login.html" onclick="logout()">🚪 Logout</a>
     </nav>
   </aside>
 
@@ -40,13 +41,10 @@
         <p>Manage system users and permissions</p>
       </div>
 
-      <button class="btn" onclick="openUserModal()">
-        + Add User
-      </button>
+      <button class="btn" onclick="openUserModal()">+ Add User</button>
     </header>
 
     <section class="panel" style="margin-top:20px;">
-
       <table id="usersTable">
         <thead>
           <tr>
@@ -57,10 +55,8 @@
             <th>Action</th>
           </tr>
         </thead>
-
         <tbody></tbody>
       </table>
-
     </section>
 
   </main>
@@ -75,21 +71,11 @@
 
     <h2>Add User</h2>
 
-    <input id="fullName"
-           placeholder="Full Name"
-           style="width:100%;padding:12px;margin-bottom:10px;">
+    <input id="fullName" placeholder="Full Name" style="width:100%;padding:12px;margin-bottom:10px;">
+    <input id="username" placeholder="Username" style="width:100%;padding:12px;margin-bottom:10px;">
+    <input id="password" type="password" placeholder="Password" style="width:100%;padding:12px;margin-bottom:10px;">
 
-    <input id="username"
-           placeholder="Username"
-           style="width:100%;padding:12px;margin-bottom:10px;">
-
-    <input id="password"
-           type="password"
-           placeholder="Password"
-           style="width:100%;padding:12px;margin-bottom:10px;">
-
-    <select id="role"
-            style="width:100%;padding:12px;margin-bottom:10px;">
+    <select id="role" style="width:100%;padding:12px;margin-bottom:10px;">
       <option value="">Select Role</option>
       <option>Admin</option>
       <option>Secretary General</option>
@@ -98,24 +84,18 @@
       <option>Viewer</option>
     </select>
 
-    <select id="status"
-            style="width:100%;padding:12px;margin-bottom:10px;">
+    <select id="status" style="width:100%;padding:12px;margin-bottom:10px;">
       <option>Active</option>
       <option>Inactive</option>
     </select>
 
     <button class="btn" onclick="saveUser()">Save User</button>
-
-    <button class="btn"
-            style="background:#999;margin-left:10px;"
-            onclick="closeUserModal()">
-      Close
-    </button>
+    <button class="btn" style="background:#999;margin-left:10px;" onclick="closeUserModal()">Close</button>
 
   </div>
-
 </div>
 
+<script src="../js/app.js"></script>
 <script src="../js/users.js"></script>
 </body>
 </html>

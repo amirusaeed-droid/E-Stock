@@ -813,29 +813,42 @@ function restoreData(event) {
 
   reader.readAsText(file);
 }
-```javascript
+
+
 function logout() {
   localStorage.removeItem("estock_logged_user");
 }
 
 function checkLogin() {
-
-  const loggedUser =
-    localStorage.getItem("estock_logged_user");
-
-  const isLoginPage =
-    window.location.pathname.includes("login.html");
+  const loggedUser = localStorage.getItem("estock_logged_user");
+  const isLoginPage = window.location.pathname.includes("login.html");
 
   if (!loggedUser && !isLoginPage) {
-
     if (window.location.pathname.includes("/pages/")) {
       window.location.href = "../login.html";
     } else {
       window.location.href = "login.html";
     }
-
   }
 }
 
-window.addEventListener("load", checkLogin);
-```
+function applyRolePermissions() {
+  const user = JSON.parse(localStorage.getItem("estock_logged_user"));
+
+  if (!user) return;
+
+  const role = user.role;
+
+  document.querySelectorAll("[data-role]").forEach(el => {
+    const allowedRoles = el.getAttribute("data-role").split(",");
+
+    if (!allowedRoles.includes(role)) {
+      el.style.display = "none";
+    }
+  });
+}
+
+window.addEventListener("load", function () {
+  checkLogin();
+  applyRolePermissions();
+});
