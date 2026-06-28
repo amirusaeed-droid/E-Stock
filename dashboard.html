@@ -23,6 +23,7 @@
       <a href="pages/stock-in.html">📥 Stock In</a>
       <a href="pages/stock-out.html">📤 Stock Out</a>
       <a href="pages/requests.html">📝 Requests</a>
+      <a href="pages/adjustments.html">⚙ Stock Adjustment</a>
       <a href="pages/reports.html">📄 Reports</a>
       <a href="pages/users.html">👥 Users</a>
       <a href="login.html">🚪 Logout</a>
@@ -115,6 +116,26 @@
       </div>
 
     </section>
+
+    <div class="panel" style="margin-top:20px;">
+  <h2>💾 System Backup</h2>
+
+  <button class="btn" onclick="backupData()">
+    ⬇ Backup Data
+  </button>
+
+  <input type="file"
+         id="restoreFile"
+         accept=".json"
+         style="display:none"
+         onchange="restoreData(event)">
+
+  <button class="btn"
+          style="margin-left:10px;"
+          onclick="document.getElementById('restoreFile').click()">
+    ⬆ Restore Data
+  </button>
+</div>
 
     <footer class="simple-footer">
       Developed by Amir Saeed

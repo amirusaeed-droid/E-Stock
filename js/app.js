@@ -715,3 +715,87 @@ window.addEventListener("load", function () {
 
   loadDashboardStats();
 });
+function backupData() {
+
+  const backup = {
+    items: JSON.parse(localStorage.getItem("estock_items")) || [],
+    categories: JSON.parse(localStorage.getItem("estock_categories")) || [],
+    suppliers: JSON.parse(localStorage.getItem("estock_suppliers")) || [],
+    stockIn: JSON.parse(localStorage.getItem("estock_stock_in")) || [],
+    stockOut: JSON.parse(localStorage.getItem("estock_stock_out")) || [],
+    requests: JSON.parse(localStorage.getItem("estock_requests")) || [],
+    adjustments: JSON.parse(localStorage.getItem("estock_adjustments")) || [],
+    backupDate: new Date().toISOString()
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(backup, null, 2)],
+    { type: "application/json" }
+  );
+
+  const a = document.createElement("a");
+
+  a.href = URL.createObjectURL(blob);
+
+  a.download =
+    "E-STOCK-BACKUP-" +
+    new Date().toISOString().split("T")[0] +
+    ".json";
+
+  a.click();
+}
+
+function restoreData(event) {
+
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+
+    const backup = JSON.parse(e.target.result);
+
+    localStorage.setItem(
+      "estock_items",
+      JSON.stringify(backup.items || [])
+    );
+
+    localStorage.setItem(
+      "estock_categories",
+      JSON.stringify(backup.categories || [])
+    );
+
+    localStorage.setItem(
+      "estock_suppliers",
+      JSON.stringify(backup.suppliers || [])
+    );
+
+    localStorage.setItem(
+      "estock_stock_in",
+      JSON.stringify(backup.stockIn || [])
+    );
+
+    localStorage.setItem(
+      "estock_stock_out",
+      JSON.stringify(backup.stockOut || [])
+    );
+
+    localStorage.setItem(
+      "estock_requests",
+      JSON.stringify(backup.requests || [])
+    );
+
+    localStorage.setItem(
+      "estock_adjustments",
+      JSON.stringify(backup.adjustments || [])
+    );
+
+    alert("Backup restored successfully");
+
+    location.reload();
+  };
+
+  reader.readAsText(file);
+}
