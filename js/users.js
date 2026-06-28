@@ -25,14 +25,7 @@ function saveUser() {
     return;
   }
 
-  users.push({
-    fullName,
-    username,
-    password,
-    role,
-    status
-  });
-
+  users.push({ fullName, username, password, role, status });
   localStorage.setItem("estock_users", JSON.stringify(users));
 
   alert("User saved successfully");
@@ -60,20 +53,64 @@ function loadUsers() {
   table.innerHTML = "";
 
   users.forEach(user => {
+    const statusClass = user.status === "Active" ? "badge-success" : "badge-danger";
+
     table.innerHTML += `
       <tr>
         <td>${user.username}</td>
         <td>${user.fullName}</td>
         <td>${user.role}</td>
-        <td><span class="badge badge-success">${user.status}</span></td>
+        <td><span class="badge ${statusClass}">${user.status}</span></td>
         <td>
-          <button class="btn" style="background:#dc2626;" onclick="deleteUser('${user.username}')">
-            Delete
-          </button>
+          <button class="btn" type="button" onclick="editUser('${user.username}')">Edit</button>
+          <button class="btn" type="button" style="background:#7c3aed;" onclick="changePassword('${user.username}')">Password</button>
+          <button class="btn" type="button" style="background:#dc2626;" onclick="deleteUser('${user.username}')">Delete</button>
         </td>
       </tr>
     `;
   });
+}
+
+function editUser(username) {
+  let users = JSON.parse(localStorage.getItem("estock_users")) || [];
+  const user = users.find(u => u.username === username);
+
+  if (!user) return;
+
+  const fullName = prompt("Full Name:", user.fullName);
+  if (fullName === null) return;
+
+  const role = prompt("Role: Admin / Secretary General / Store Keeper / Requester / Viewer", user.role);
+  if (role === null) return;
+
+  const status = prompt("Status: Active / Inactive", user.status);
+  if (status === null) return;
+
+  user.fullName = fullName.trim() || user.fullName;
+  user.role = role.trim() || user.role;
+  user.status = status.trim() || user.status;
+
+  localStorage.setItem("estock_users", JSON.stringify(users));
+  location.reload();
+}
+
+function changePassword(username) {
+  let users = JSON.parse(localStorage.getItem("estock_users")) || [];
+  const user = users.find(u => u.username === username);
+
+  if (!user) return;
+
+  const newPassword = prompt("Enter new password for " + username + ":");
+
+  if (!newPassword) {
+    alert("Password not changed");
+    return;
+  }
+
+  user.password = newPassword;
+  localStorage.setItem("estock_users", JSON.stringify(users));
+
+  alert("Password changed successfully");
 }
 
 function deleteUser(username) {
