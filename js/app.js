@@ -64,7 +64,7 @@ function closeModal() {
   document.getElementById("itemModal").style.display = "none";
 }
 
-function saveItem() {
+async function saveItem() {
   const code = document.getElementById("itemCode").value.trim();
   const name = document.getElementById("itemName").value.trim();
   const category = document.getElementById("itemCategory").value;
@@ -73,33 +73,59 @@ function saveItem() {
   const minStock = document.getElementById("itemMinStock").value.trim();
   const stock = document.getElementById("itemStock").value.trim();
   const location = document.getElementById("itemLocation").value.trim();
-  const description = document.getElementById("itemDescription").value.trim();
 
   if (!code || !name || !stock) {
     alert("Please fill all required fields");
     return;
   }
 
+  const status =
+    Number(stock) <= 0
+      ? "Out of Stock"
+      : Number(stock) <= Number(minStock || 5)
+      ? "Low Stock"
+      : "Available";
+
   const item = {
-    code, name, category, unit, supplier, minStock, stock, location, description,
-    status: Number(stock) <= Number(minStock || 5) ? "Low" : "Available"
+    code: code,
+    name: name,
+    category: category,
+    unit: unit,
+    supplier: supplier,
+    min_stock: Number(minStock || 5),
+    stock: Number(stock),
+    location: location,
+    status: status
   };
 
-  let items = JSON.parse(localStorage.getItem("estock_items")) || [];
-  items.push(item);
-  localStorage.setItem("estock_items", JSON.stringify(items));
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/items`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation"
+    },
+    body: JSON.stringify(item)
+  });
 
-  addItemToTable(item);
-  clearItemForm();
-  closeModal();
+  if (!response.ok) {
+    alert("Failed to save item. Item code may already exist.");
+    return;
+  }
+
+  alert("Item saved to cloud successfully");
+  location.reload();
 }
 
 function addItemToTable(item) {
   const table = document.querySelector("#itemsTable tbody");
+  if (!table) return;
+
   const row = table.insertRow();
 
   const stock = Number(item.stock || 0);
-  const minStock = Number(item.minStock || 5);
+  const minStock = Number(item.min_stock || item.minStock || 5);
 
   let statusText = "Available";
   let badgeClass = "badge-success";
@@ -112,16 +138,14 @@ function addItemToTable(item) {
     badgeClass = "badge-warning";
   }
 
-  item.status = statusText;
-
   row.innerHTML = `
     <td>${item.code}</td>
     <td>${item.name}</td>
-    <td>${item.category}</td>
+    <td>${item.category || "-"}</td>
     <td>${item.unit || "-"}</td>
     <td>${item.supplier || "-"}</td>
-    <td>${item.minStock || "-"}</td>
-    <td>${item.stock}</td>
+    <td>${minStock}</td>
+    <td>${stock}</td>
     <td>${item.location || "-"}</td>
     <td><span class="badge ${badgeClass}">${statusText}</span></td>
     <td>
@@ -131,11 +155,23 @@ function addItemToTable(item) {
   `;
 }
 
-function deleteItem(code) {
+async function deleteItem(code) {
   if (!confirm("Are you sure you want to delete this item?")) return;
-  let items = JSON.parse(localStorage.getItem("estock_items")) || [];
-  items = items.filter(item => item.code !== code);
-  localStorage.setItem("estock_items", JSON.stringify(items));
+
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/items?code=eq.${encodeURIComponent(code)}`, {
+    method: "DELETE",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
+
+  if (!response.ok) {
+    alert("Failed to delete item");
+    return;
+  }
+
+  alert("Item deleted");
   location.reload();
 }
 

@@ -18,16 +18,25 @@ function closeRequestModal() {
   document.getElementById("requestModal").style.display = "none";
 }
 
-function loadItemSuggestions() {
+async function loadItemSuggestions() {
   const list = document.getElementById("stockItemsList");
   if (!list) return;
 
-  const items = JSON.parse(localStorage.getItem("estock_items")) || [];
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/items?select=*`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`
+    }
+  });
+
+  const items = await response.json();
 
   list.innerHTML = "";
 
   items.forEach(item => {
-    list.innerHTML += `<option value="${item.name}" label="${item.code} - ${item.name} | Balance: ${item.stock}"></option>`;
+    list.innerHTML += `
+      <option value="${item.name}" label="${item.code} - ${item.name} | Balance: ${item.stock}">
+    `;
   });
 }
 
