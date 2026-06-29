@@ -38,10 +38,13 @@
       <div>
         <button class="btn" type="button" onclick="document.getElementById('requestModal').style.display='block'">+ New Request</button>
 
-        <button class="btn" type="button" style="background:#dc2626;margin-left:10px;"
-          onclick="localStorage.removeItem('estock_requests');location.reload();">
-          Clear Requests
-        </button>
+        <button class="btn"
+        type="button"
+        data-role="Admin"
+        style="background:#dc2626;margin-left:10px;"
+        onclick="localStorage.removeItem('estock_requests');location.reload();">
+       Clear Requests
+     </button>
       </div>
     </header>
 
