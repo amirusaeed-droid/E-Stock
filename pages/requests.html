@@ -18,14 +18,12 @@
     </div>
 
     <nav class="menu">
-      <a href="../dashboard.html">📊 Dashboard</a>
-      <a href="items.html">📦 Items</a>
-      <a href="stock-in.html">📥 Stock In</a>
-      <a href="stock-out.html">📤 Stock Out</a>
-      <a href="requests.html" class="active">📝 Requests</a>
-      <a href="reports.html">📄 Reports</a>
-      <a href="users.html">👥 Users</a>
-      <a href="../login.html">🚪 Logout</a>
+    <a href="../dashboard.html" data-role="Admin,Secretary General,Store Keeper,Requester,Viewer">📊 Dashboard</a>
+    <a href="items.html" data-role="Admin,Store Keeper">📦 Items</a>
+    <a href="stock-in.html" data-role="Admin,Store Keeper">📥 Stock In</a>
+    <a href="requests.html" data-role="Admin,Secretary General,Store Keeper,Requester">📝 Requests</a>
+    <a href="users.html" data-role="Admin">👥 Users</a>
+    <a href="../login.html" onclick="logout()">🚪 Logout</a>
     </nav>
   </aside>
 

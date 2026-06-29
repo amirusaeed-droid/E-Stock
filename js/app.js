@@ -881,3 +881,33 @@ window.addEventListener("load", function () {
   checkLogin();
   applyRolePermissions();
 });
+function blockPageByRole() {
+  const storedUser = localStorage.getItem("estock_logged_user");
+  if (!storedUser) return;
+
+  const user = JSON.parse(storedUser);
+  const role = user.role;
+  const path = window.location.pathname;
+
+  const rules = [
+    { page: "users.html", roles: ["Admin"] },
+    { page: "items.html", roles: ["Admin", "Store Keeper"] },
+    { page: "categories.html", roles: ["Admin", "Store Keeper"] },
+    { page: "suppliers.html", roles: ["Admin", "Store Keeper"] },
+    { page: "stock-in.html", roles: ["Admin", "Store Keeper"] },
+    { page: "stock-out.html", roles: ["Admin", "Store Keeper"] },
+    { page: "adjustments.html", roles: ["Admin", "Store Keeper"] },
+    { page: "reports.html", roles: ["Admin", "Secretary General", "Store Keeper", "Viewer"] }
+  ];
+
+  const rule = rules.find(r => path.includes(r.page));
+
+  if (rule && !rule.roles.includes(role)) {
+    alert("Access denied");
+    window.location.href = path.includes("/pages/")
+      ? "../dashboard.html"
+      : "dashboard.html";
+  }
+}
+
+window.addEventListener("load", blockPageByRole);
