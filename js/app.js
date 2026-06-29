@@ -858,6 +858,25 @@ function applyRolePermissions() {
   });
 }
 
+function loadLoggedUser() {
+  const storedUser = localStorage.getItem("estock_logged_user");
+  if (!storedUser) return;
+
+  const user = JSON.parse(storedUser);
+
+  const welcome = document.getElementById("welcomeUser");
+  const currentUser = document.getElementById("currentUser");
+
+  if (welcome) {
+    welcome.textContent = "Welcome, " + (user.full_name || user.username) + "! 👋";
+  }
+
+  if (currentUser) {
+    currentUser.textContent = user.role;
+  }
+}
+
+window.addEventListener("load", loadLoggedUser);
 window.addEventListener("load", function () {
   checkLogin();
   applyRolePermissions();
