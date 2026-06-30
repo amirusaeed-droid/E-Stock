@@ -1,24 +1,16 @@
-async function saveCategory() {
-  const name = document.getElementById("categoryName").value.trim();
-  const description = document.getElementById("categoryDescription").value.trim();
+async function loadItemCategories() {
+  const select = document.getElementById("itemCategory");
+  if (!select) return;
 
-  if (!name) {
-    alert("Please enter category name");
-    return;
-  }
+  select.innerHTML = `<option value="">Select Category</option>`;
 
-  const response = await cloudInsert("categories", {
-    name: name,
-    description: description
+  const categories = await cloudGet("categories", "select=*&order=name.asc");
+
+  categories.forEach(cat => {
+    select.innerHTML += `
+      <option value="${cat.name}">${cat.name}</option>
+    `;
   });
-
-  if (!response.ok) {
-    alert("Failed to save category");
-    return;
-  }
-
-  alert("Category saved to cloud");
-  location.reload();
 }
 /* ITEMS */
 
