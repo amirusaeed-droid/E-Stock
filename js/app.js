@@ -1,16 +1,27 @@
-async function loadItemCategories() {
-  const select = document.getElementById("itemCategory");
-  if (!select) return;
+async function login() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-  select.innerHTML = `<option value="">Select Category</option>`;
+  if (!username || !password) {
+    alert("Please enter username and password");
+    return;
+  }
 
-  const categories = await cloudGet("categories", "select=*&order=name.asc");
+  const users = await cloudGet("users", "select=*");
 
-  categories.forEach(cat => {
-    select.innerHTML += `
-      <option value="${cat.name}">${cat.name}</option>
-    `;
-  });
+  const foundUser = users.find(user =>
+    user.username === username &&
+    user.password === password &&
+    user.status === "Active"
+  );
+
+  if (!foundUser) {
+    alert("Wrong username, password or inactive account");
+    return;
+  }
+
+  localStorage.setItem("estock_logged_user", JSON.stringify(foundUser));
+  window.location.href = "dashboard.html";
 }
 /* ITEMS */
 
