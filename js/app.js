@@ -1,29 +1,25 @@
-async function login() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
+async function saveCategory() {
+  const name = document.getElementById("categoryName").value.trim();
+  const description = document.getElementById("categoryDescription").value.trim();
 
-  if (!username || !password) {
-    alert("Please enter username and password");
+  if (!name) {
+    alert("Please enter category name");
     return;
   }
 
-  const users = await cloudGet("users", "select=*");
+  const response = await cloudInsert("categories", {
+    name: name,
+    description: description
+  });
 
-  const foundUser = users.find(user =>
-    user.username === username &&
-    user.password === password &&
-    user.status === "Active"
-  );
-
-  if (!foundUser) {
-    alert("Wrong username, password or inactive account");
+  if (!response.ok) {
+    alert("Failed to save category");
     return;
   }
 
-  localStorage.setItem("estock_logged_user", JSON.stringify(foundUser));
-  window.location.href = "dashboard.html";
+  alert("Category saved to cloud");
+  location.reload();
 }
-
 /* ITEMS */
 
 function searchItems() {
