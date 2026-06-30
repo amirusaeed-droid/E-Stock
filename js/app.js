@@ -7,31 +7,22 @@ async function login() {
     return;
   }
 
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*`, {
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`
-    }
-  });
-
-  const users = await response.json();
-
-  console.log("Users from Supabase:", users);
-
-  const foundUser = users.find(user =>
-    user.username === username &&
-    user.password === password &&
-    user.status === "Active"
+  const users = await supabaseSelect(
+    `users&username=eq.${username}&password=eq.${password}&status=eq.Active`
   );
 
-  if (!foundUser) {
+  if (!users || users.length === 0) {
     alert("Wrong username, password or inactive account");
     return;
   }
 
+  const foundUser = users[0];
+
   localStorage.setItem("estock_logged_user", JSON.stringify(foundUser));
+
   window.location.href = "dashboard.html";
 }
+
 function toggleDarkMode() {
   document.body.classList.toggle("dark-mode");
 }
@@ -211,7 +202,7 @@ function closeCategoryModal() {
   document.getElementById("categoryModal").style.display = "none";
 }
 
-function saveCategory() {
+async function saveCategory() {
   const name = document.getElementById("categoryName").value.trim();
   const description = document.getElementById("categoryDescription").value.trim();
 
@@ -220,37 +211,74 @@ function saveCategory() {
     return;
   }
 
-  let categories = JSON.parse(localStorage.getItem("estock_categories")) || [];
-  categories.push({ name, description });
-  localStorage.setItem("estock_categories", JSON.stringify(categories));
+  const response = await cloudInsert("categories", {
+    name: name,
+    description: description
+  });
+
+  if (!response.ok) {
+    alert("Failed to save category. It may already exist.");
+    return;
+  }
+
+  alert("Category saved to cloud");
   location.reload();
 }
 
 function addCategoryToTable(category, index) {
   const table = document.querySelector("#categoriesTable tbody");
+  if (!table) return;
+
   const row = table.insertRow();
 
   row.innerHTML = `
     <td>${index}</td>
     <td>${category.name}</td>
     <td>${category.description || "-"}</td>
-    <td><button class="btn" style="background:#dc2626;" onclick="deleteCategory('${category.name}')">Delete</button></td>
+    <td>
+      <button class="btn" style="background:#dc2626;" onclick="deleteCategory('${category.name}')">
+        Delete
+      </button>
+    </td>
   `;
 }
 
-function deleteCategory(name) {
+async function deleteCategory(name) {
   if (!confirm("Delete this category?")) return;
-  let categories = JSON.parse(localStorage.getItem("estock_categories")) || [];
-  categories = categories.filter(cat => cat.name !== name);
-  localStorage.setItem("estock_categories", JSON.stringify(categories));
+
+  const response = await cloudDelete(
+    "categories",
+    `name=eq.${encodeURIComponent(name)}`
+  );
+
+  if (!response.ok) {
+    alert("Failed to delete category");
+    return;
+  }
+
+  alert("Category deleted");
   location.reload();
 }
 
 function searchCategories() {
   const input = document.getElementById("searchCategory").value.toLowerCase();
   const rows = document.querySelectorAll("#categoriesTable tbody tr");
+
   rows.forEach(row => {
     row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
+  });
+}
+
+async function loadCategoriesFromSupabase() {
+  const table = document.querySelector("#categoriesTable tbody");
+  if (!table) return;
+
+  table.innerHTML = "";
+
+  const categories = await cloudGet("categories", "select=*&order=id.asc");
+
+  categories.forEach((cat, index) => {
+    addCategoryToTable(cat, index + 1);
   });
 }
 
@@ -749,10 +777,9 @@ window.addEventListener("load", function () {
   }
 
   const categoriesTable = document.getElementById("categoriesTable");
-  if (categoriesTable) {
-    const categories = JSON.parse(localStorage.getItem("estock_categories")) || [];
-    categories.forEach((cat, index) => addCategoryToTable(cat, index + 1));
-  }
+if (categoriesTable) {
+  loadCategoriesFromSupabase();
+}
 
   const suppliersTable = document.getElementById("suppliersTable");
   if (suppliersTable) {
@@ -878,11 +905,10 @@ function checkLogin() {
 }
 
 function applyRolePermissions() {
-  const storedUser = localStorage.getItem("estock_logged_user");
+  const user = JSON.parse(localStorage.getItem("estock_logged_user"));
 
-  if (!storedUser) return;
+  if (!user) return;
 
-  const user = JSON.parse(storedUser);
   const role = user.role;
 
   document.querySelectorAll("[data-role]").forEach(el => {
@@ -894,25 +920,6 @@ function applyRolePermissions() {
   });
 }
 
-function loadLoggedUser() {
-  const storedUser = localStorage.getItem("estock_logged_user");
-  if (!storedUser) return;
-
-  const user = JSON.parse(storedUser);
-
-  const welcome = document.getElementById("welcomeUser");
-  const currentUser = document.getElementById("currentUser");
-
-  if (welcome) {
-    welcome.textContent = "Welcome, " + (user.full_name || user.username) + "! 👋";
-  }
-
-  if (currentUser) {
-    currentUser.textContent = user.role;
-  }
-}
-
-window.addEventListener("load", loadLoggedUser);
 window.addEventListener("load", function () {
   checkLogin();
   applyRolePermissions();
