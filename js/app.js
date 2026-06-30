@@ -7,24 +7,21 @@ async function login() {
     return;
   }
 
-  const users = await supabaseSelect(
-    `users&username=eq.${username}&password=eq.${password}&status=eq.Active`
+  const users = await cloudGet("users", "select=*");
+
+  const foundUser = users.find(user =>
+    user.username === username &&
+    user.password === password &&
+    user.status === "Active"
   );
 
-  if (!users || users.length === 0) {
+  if (!foundUser) {
     alert("Wrong username, password or inactive account");
     return;
   }
 
-  const foundUser = users[0];
-
   localStorage.setItem("estock_logged_user", JSON.stringify(foundUser));
-
   window.location.href = "dashboard.html";
-}
-
-function toggleDarkMode() {
-  document.body.classList.toggle("dark-mode");
 }
 
 /* ITEMS */
