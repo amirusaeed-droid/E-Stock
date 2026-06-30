@@ -17,29 +17,17 @@
       <p>Kondey Council</p>
     </div>
 
-<nav class="menu">
-  <a href="dashboard.html" data-role="Admin,Requester,Store Keeper,Viewer">📊 Dashboard</a>
-
-  <a href="pages/items.html" data-role="Admin,Store Keeper">📦 Items</a>
-
-  <a href="pages/categories.html" data-role="Admin,Store Keeper">📂 Categories</a>
-
-  <a href="pages/suppliers.html" data-role="Admin,Store Keeper">🏢 Suppliers</a>
-
-  <a href="pages/stock-in.html" data-role="Admin,Store Keeper">📥 Stock In</a>
-
-  <a href="pages/stock-out.html" data-role="Admin,Store Keeper">📤 Stock Out</a>
-
-  <a href="pages/requests.html" data-role="Admin,Requester,Store Keeper">📝 Requests</a>
-
-  <a href="pages/adjustments.html" data-role="Admin,Store Keeper">⚙ Stock Adjustment</a>
-
-  <a href="pages/reports.html" data-role="Admin,Viewer,Store Keeper">📄 Reports</a>
-
-  <a href="pages/users.html" data-role="Admin">👥 Users</a>
-
-  <a href="login.html" onclick="logout()">🚪 Logout</a>
-</nav>
+    <nav class="menu">
+      <a href="dashboard.html" class="active">📊 Dashboard</a>
+      <a href="pages/items.html">📦 Items</a>
+      <a href="pages/stock-in.html">📥 Stock In</a>
+      <a href="pages/stock-out.html">📤 Stock Out</a>
+      <a href="pages/requests.html">📝 Requests</a>
+      <a href="pages/adjustments.html">⚙ Stock Adjustment</a>
+      <a href="pages/reports.html">📄 Reports</a>
+      <a href="pages/users.html">👥 Users</a>
+      <a href="login.html">🚪 Logout</a>
+    </nav>
   </aside>
 
   <main class="main-content dashboard-modern">
@@ -49,7 +37,7 @@
         <h1>Dashboard </h1>
         <p>Inventory overview and activity summary</p>
       </div>
-      <div class="admin-box">👤 <span id="currentUser">User</span></div>
+      <div class="admin-box">👤 <span id="currentUser"></span></div>
     </header>
 
     <section class="welcome-box">
